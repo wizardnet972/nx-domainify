@@ -1,0 +1,34 @@
+{
+  "generators": {
+    "domain": {
+      "factory": "./src/generators/domain/domain",
+      "schema": "./src/generators/domain/schema.json",
+      "description": "domain generator"
+    },
+    "feature": {
+      "factory": "./src/generators/feature/feature",
+      "schema": "./src/generators/feature/schema.json",
+      "description": "feature generator"
+    },
+    "init": {
+      "factory": "./src/generators/init/init",
+      "schema": "./src/generators/init/schema.json",
+      "description": "init generator"
+    },
+    "api": {
+      "factory": "./src/generators/api/api",
+      "schema": "./src/generators/api/schema.json",
+      "description": "api generator"
+    },
+    "ui": {
+      "factory": "./src/generators/ui/ui",
+      "schema": "./src/generators/ui/schema.json",
+      "description": "ui generator"
+    },
+    "util": {
+      "factory": "./src/generators/util/util",
+      "schema": "./src/generators/util/schema.json",
+      "description": "util generator"
+    }
+  }
+}
