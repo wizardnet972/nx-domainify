@@ -1,3 +1,3 @@
 export interface InitGeneratorSchema {
-  name?: never;
+  skipFormat?: boolean;
 }

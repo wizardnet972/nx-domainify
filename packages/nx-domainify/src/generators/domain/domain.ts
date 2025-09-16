@@ -3,7 +3,8 @@ import { formatFiles, getWorkspaceLayout, joinPathFragments, names, Tree } from 
 import { DomainGeneratorSchema } from './schema';
 
 import { libraryGenerator } from '@nx/angular/generators';
-import { addDepsConstraints } from '../../utils/add-deps-constraints';
+import { updateDepsConstraints } from '../../utils/update-deps-constraints';
+import { parse } from 'json5';
 
 export async function domainGenerator(tree: Tree, options: DomainGeneratorSchema) {
   const { fileName: domainName } = names(options.name);
@@ -15,6 +16,7 @@ export async function domainGenerator(tree: Tree, options: DomainGeneratorSchema
   const projectRoot = joinPathFragments(libsDir, domainNameWithoutPrefix, 'domain');
 
   await libraryGenerator(tree, {
+    ...options,
     name: `${domainNameWithoutPrefix}-domain`,
     directory: projectRoot,
     buildable: true,
@@ -30,12 +32,14 @@ export async function domainGenerator(tree: Tree, options: DomainGeneratorSchema
   tree.write(joinPathFragments(projectRoot, 'src', 'lib', 'entities', '.gitkeep'), ' ');
   tree.write(joinPathFragments(projectRoot, 'src', 'lib', 'infrastructure', '.gitkeep'), ' ');
 
-  addDepsConstraints(tree, [
-    {
+  updateDepsConstraints(tree, (node) => {
+    const value = parse(node.getText());
+    value.push({
       sourceTag: `domain:${domainNameWithoutPrefix}`,
       onlyDependOnLibsWithTags: ['type:domain-logic', `domain:${domainNameWithoutPrefix}`],
-    },
-  ]);
+    });
+    return JSON.stringify(value);
+  });
 
   await formatFiles(tree);
 }

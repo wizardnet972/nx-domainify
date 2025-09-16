@@ -4,26 +4,38 @@ import { libraryGenerator } from '@nx/angular/generators';
 import { cleanupLibrary } from '../../utils/cleanup-library';
 import { resolveDomainOrThrow } from '../../utils/resolve-domain-or-throw';
 
+export const normalizeOptions = (options: ApiGeneratorSchema) => {
+  const { name, domain = '', directory = '', ...extra } = options;
+
+  return {
+    extra,
+    name: names(name).fileName,
+    domainName: names(domain ?? '').fileName,
+    directory: names(directory ?? '').fileName,
+  };
+};
+
 export async function apiGenerator(tree: Tree, options: ApiGeneratorSchema) {
   const prefix = 'api';
 
-  const { fileName: name } = names(options.name);
-  const { fileName: domainName } = names(options.domain ?? '');
-  const { fileName: directory = '' } = names(options.directory ?? '');
+  const { name, domainName, directory, extra } = normalizeOptions(options);
 
-  const normilizeDirectory = directory.replace(/\//g, '-');
+  const normalizeDirectory = directory.replace(/\//g, '-');
 
   const { domainName: domain, directory: domainDirectory } = resolveDomainOrThrow(tree, domainName);
 
-  const libraryName = [domain, normilizeDirectory, prefix, name].filter(Boolean).join('-');
-  const projectRoot = joinPathFragments(domainDirectory, directory, [prefix, name].filter(Boolean).join('-'));
+  const libraryName = [domain === 'shared' ? null : domain, normalizeDirectory, !options.skipPrefix && prefix, name]
+    .filter(Boolean)
+    .join('-');
+  const projectRoot = joinPathFragments(domainDirectory, directory, [!options.skipPrefix && prefix, name].filter(Boolean).join('-'));
 
   await libraryGenerator(tree, {
     name: libraryName,
     directory: projectRoot,
     buildable: true,
-    prefix: libraryName,
+    prefix: domain === 'shared' ? prefix : domain,
     tags: `type:${prefix},domain:${domain}`,
+    ...extra,
   });
 
   cleanupLibrary(tree, projectRoot);

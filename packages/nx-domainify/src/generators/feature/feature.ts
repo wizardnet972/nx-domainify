@@ -15,15 +15,16 @@ export async function featureGenerator(tree: Tree, options: FeatureGeneratorSche
   const { fileName: domainName } = names(options.domain ?? '');
   const { fileName: directory = '' } = names(options.directory ?? '');
 
-  const normilizeDirectory = directory.replace(/\//g, '-');
+  const normalizeDirectory = directory.replace(/\//g, '-');
   const npmScope = getNpmScope(tree);
 
   const { domainName: domain, directory: domainDirectory, projectRoot: domainProjectRoot } = resolveDomainOrThrow(tree, domainName);
 
-  const libraryName = [domain, normilizeDirectory, prefix, name].filter(Boolean).join('-');
+  const libraryName = [domain, normalizeDirectory, prefix, name].filter(Boolean).join('-');
   const projectRoot = joinPathFragments(domainDirectory, directory, [prefix, name].filter(Boolean).join('-'));
 
   await libraryGenerator(tree, {
+    ...options,
     name: libraryName,
     directory: projectRoot,
     buildable: true,
@@ -38,6 +39,7 @@ export async function featureGenerator(tree: Tree, options: FeatureGeneratorSche
     name: names(name).name,
     path: joinPathFragments(projectRoot, 'src', 'lib', name),
     selector: libraryName,
+    ...options,
   });
 
   tree.write(joinPathFragments(projectRoot, 'src', 'index.ts'), `export * from './lib/${name}.component'`);

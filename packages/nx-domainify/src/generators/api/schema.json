@@ -21,6 +21,10 @@
     "directory": {
       "type": "string",
       "description": "A directory where the ui library is placed."
+    },
+    "skipPrefix": {
+      "type": "boolean",
+      "description": "Skip the prefix for the api library."
     }
   },
   "required": ["name"]

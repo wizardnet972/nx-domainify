@@ -20,7 +20,11 @@
     },
     "directory": {
       "type": "string",
-      "description": "A directory where the ui library is placed."
+      "description": "A directory where the util library is placed."
+    },
+    "skipPrefix": {
+      "type": "boolean",
+      "description": "Skip the prefix for the util library."
     }
   },
   "required": ["name"]

@@ -1,9 +1,9 @@
 import { formatFiles, Tree } from '@nx/devkit';
 import { InitGeneratorSchema } from './schema';
-import { setDepsConstraints } from '../../utils/set-deps-constraints';
+import { updateDepsConstraints } from '../../utils/update-deps-constraints';
 
 export async function initGenerator(tree: Tree, options: InitGeneratorSchema) {
-  setDepsConstraints(tree, [
+  const dddRules = [
     {
       sourceTag: 'type:app',
       onlyDependOnLibsWithTags: ['type:api', 'type:feature', 'type:ui', 'type:domain-logic', 'type:util'],
@@ -28,9 +28,11 @@ export async function initGenerator(tree: Tree, options: InitGeneratorSchema) {
       sourceTag: 'domain:shared',
       onlyDependOnLibsWithTags: ['domain:shared'],
     },
-  ]);
+  ];
 
-  await formatFiles(tree);
+  updateDepsConstraints(tree, () => JSON.stringify(dddRules));
+
+  if (!options.skipFormat) await formatFiles(tree);
 }
 
 export default initGenerator;
