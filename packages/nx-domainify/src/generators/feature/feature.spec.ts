@@ -6,7 +6,7 @@ import { FeatureGeneratorSchema } from './schema';
 
 describe('feature generator', () => {
   let tree: Tree;
-  const options: FeatureGeneratorSchema = { name: 'test' };
+  const options: FeatureGeneratorSchema = { name: 'test', domain: 'test', directory: 'test' };
 
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();

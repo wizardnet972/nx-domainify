@@ -6,7 +6,7 @@ import { ApiGeneratorSchema } from './schema';
 
 describe('api generator', () => {
   let tree: Tree;
-  const options: ApiGeneratorSchema = { name: 'test' };
+  const options: ApiGeneratorSchema = { name: 'test', domain: 'test', directory: 'test' };
 
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
