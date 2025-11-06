@@ -1,13 +1,11 @@
 {
-  "eslint.validate": ["json"],
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
     "**/.hg": true,
     "**/.DS_Store": true,
-    "**/Thumbs.db": true,
-    "**/CVS": true
+    "**/Thumbs.db": true
   },
   "hide-files.files": [],
-  "nxConsole.generateAiAgentRules": true
+  "eslint.validate": ["json"]
 }

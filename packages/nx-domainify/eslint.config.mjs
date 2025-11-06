@@ -9,7 +9,7 @@ export default [
         'error',
         {
           ignoredFiles: [
-            '{projectRoot}/eslint.config.{js,cjs,mjs}',
+            '{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}',
             '{projectRoot}/vite.config.{js,ts,mjs,mts}',
           ],
         },
@@ -20,7 +20,10 @@ export default [
     },
   },
   {
-    files: ['**/package.json'],
+    ignores: ['**/out-tsc'],
+  },
+  {
+    files: ['**/package.json', '**/package.json', '**/generators.json'],
     rules: {
       '@nx/nx-plugin-checks': 'error',
     },

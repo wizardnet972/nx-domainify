@@ -12,19 +12,6 @@
         "index": 0
       },
       "x-prompt": "What name would you like to use?"
-    },
-    "domain": {
-      "type": "string",
-      "aliases": ["domain", "domainName"],
-      "description": "choose the domain project"
-    },
-    "directory": {
-      "type": "string",
-      "description": "A directory where the ui library is placed."
-    },
-    "skipPrefix": {
-      "type": "boolean",
-      "description": "Skip the prefix for the api library."
     }
   },
   "required": ["name"]

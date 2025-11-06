@@ -3,5 +3,16 @@
   "$id": "Init",
   "title": "",
   "type": "object",
-  "properties": {}
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use?"
+    }
+  },
+  "required": ["name"]
 }

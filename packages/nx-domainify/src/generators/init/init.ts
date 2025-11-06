@@ -1,38 +1,22 @@
-import { formatFiles, Tree } from '@nx/devkit';
+import {
+  addProjectConfiguration,
+  formatFiles,
+  generateFiles,
+  Tree,
+} from '@nx/devkit';
+import * as path from 'path';
 import { InitGeneratorSchema } from './schema';
-import { updateDepsConstraints } from '../../utils/update-deps-constraints';
 
 export async function initGenerator(tree: Tree, options: InitGeneratorSchema) {
-  const dddRules = [
-    {
-      sourceTag: 'type:app',
-      onlyDependOnLibsWithTags: ['type:api', 'type:feature', 'type:ui', 'type:domain-logic', 'type:util'],
-    },
-    {
-      sourceTag: 'type:api',
-      onlyDependOnLibsWithTags: ['type:ui', 'type:domain-logic', 'type:util'],
-    },
-    {
-      sourceTag: 'type:feature',
-      onlyDependOnLibsWithTags: ['type:ui', 'type:domain-logic', 'type:util'],
-    },
-    {
-      sourceTag: 'type:ui',
-      onlyDependOnLibsWithTags: ['type:domain-logic', 'type:util'],
-    },
-    {
-      sourceTag: 'type:domain-logic',
-      onlyDependOnLibsWithTags: ['type:util'],
-    },
-    {
-      sourceTag: 'domain:shared',
-      onlyDependOnLibsWithTags: ['domain:shared'],
-    },
-  ];
-
-  updateDepsConstraints(tree, () => JSON.stringify(dddRules));
-
-  if (!options.skipFormat) await formatFiles(tree);
+  const projectRoot = `libs/${options.name}`;
+  addProjectConfiguration(tree, options.name, {
+    root: projectRoot,
+    projectType: 'library',
+    sourceRoot: `${projectRoot}/src`,
+    targets: {},
+  });
+  generateFiles(tree, path.join(__dirname, 'files'), projectRoot, options);
+  await formatFiles(tree);
 }
 
 export default initGenerator;

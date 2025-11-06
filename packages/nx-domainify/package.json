@@ -1,17 +1,55 @@
 {
   "name": "nx-domainify",
-  "version": "0.0.1",
-  "type": "commonjs",
-  "main": "./src/index.js",
-  "types": "./src/index.d.ts",
-  "generators": "./generators.json",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "@nx-domainify/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo",
+    "generators.json"
+  ],
+  "nx": {
+    "targets": {
+      "build": {
+        "executor": "@nx/js:tsc",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "options": {
+          "outputPath": "packages/nx-domainify/dist",
+          "main": "packages/nx-domainify/src/index.ts",
+          "tsConfig": "packages/nx-domainify/tsconfig.lib.json",
+          "rootDir": "packages/nx-domainify/src",
+          "generatePackageJson": false,
+          "assets": [
+            {
+              "input": "./packages/nx-domainify/src",
+              "glob": "**/!(*.ts)",
+              "output": "."
+            },
+            {
+              "input": "./packages/nx-domainify/src",
+              "glob": "**/*.d.ts",
+              "output": "."
+            }
+          ]
+        }
+      }
+    }
+  },
   "dependencies": {
-    "tslib": "^2.3.0",
-    "@nx/devkit": "20.7.1",
-    "@nx/angular": "20.7.1",
-    "ts-morph": "^25.0.1",
-    "@nx/eslint-plugin": "20.7.1",
-    "@nx/eslint": "20.7.1",
-    "@phenomnomnominal/tsquery": "^6.1.3"
-  }
+    "@nx/devkit": "22.0.2",
+    "tslib": "^2.3.0"
+  },
+  "generators": "./generators.json"
 }
