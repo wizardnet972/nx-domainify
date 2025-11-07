@@ -1,4 +1,4 @@
-import { formatFiles, joinPathFragments, names, Tree } from '@nx/devkit';
+import { formatFiles, joinPathFragments, names, readNxJson, Tree } from '@nx/devkit';
 import { UtilGeneratorSchema } from './schema';
 import { libraryGenerator } from '@nx/angular/generators';
 import { cleanupLibrary } from '../../utils/cleanup-library';
@@ -30,6 +30,7 @@ export async function utilGenerator(tree: Tree, options: UtilGeneratorSchema) {
   const projectRoot = joinPathFragments(domainDirectory, directory, [!options.skipPrefix && prefix, name].filter(Boolean).join('-'));
 
   await libraryGenerator(tree, {
+    ...(readNxJson(tree)?.generators?.['@nx/angular:library'] || {}),
     name: libraryName,
     directory: projectRoot,
     buildable: true,

@@ -88,14 +88,14 @@ describe('featureGenerator', () => {
     const formatSpy = vi.spyOn(devkit, 'formatFiles').mockResolvedValue();
 
     // Act
-    await featureGenerator(tree, { name: 'search', domain: 'booking', directory: '' });
+    await featureGenerator(tree, { domain: 'booking', directory: 'experience/search' });
 
     // Assert
-    const project = readProjectConfiguration(tree, 'booking-feature-search');
-    expect(project.root).toBe('libs/booking/feature-search');
+    const project = readProjectConfiguration(tree, 'booking-experience-feature-search');
+    expect(project.root).toBe('libs/booking/experience/feature-search');
     expect(project.tags).toContain('type:feature');
     expect(project.tags).toContain('domain:booking');
-    expect(tree.exists('libs/booking/feature-search/src/lib/search.ts')).toBe(true);
+    expect(tree.exists('libs/booking/experience/feature-search/src/lib/search.ts')).toBe(true);
     expect(formatSpy).toHaveBeenCalledWith(tree);
   });
 
@@ -104,7 +104,7 @@ describe('featureGenerator', () => {
     setupDomainProject(tree, 'support');
 
     // Act
-    await featureGenerator(tree, { name: 'chat', domain: 'support', directory: '' });
+    await featureGenerator(tree, { domain: 'support', directory: 'messaging/chat' });
 
     // Assert
     const facade = tree.read('libs/support/domain/src/lib/application/chat.facade.ts', 'utf-8');
@@ -119,7 +119,7 @@ describe('featureGenerator', () => {
     setupDomainProject(tree, 'shared');
 
     // Act
-    await featureGenerator(tree, { name: 'announcements', domain: 'shared', directory: '' });
+    await featureGenerator(tree, { domain: 'shared', directory: 'announcements' });
 
     // Assert
     const component = tree.read('libs/shared/feature-announcements/src/lib/announcements.ts', 'utf-8');

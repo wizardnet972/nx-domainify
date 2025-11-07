@@ -1,57 +1,97 @@
+import { vi } from 'vitest';
+
+vi.mock('@nx/angular/generators', () => ({
+  libraryGenerator: vi.fn(),
+}));
+
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { Tree, readProjectConfiguration } from '@nx/devkit';
+import { addProjectConfiguration, joinPathFragments, Tree } from '@nx/devkit';
+import * as devkit from '@nx/devkit';
+import * as angularGenerators from '@nx/angular/generators';
 
 import { uiGenerator } from './ui';
-import domainGenerator from '../domain/domain';
 
-describe('ui generator', () => {
+type LibraryGeneratorSchema = Parameters<typeof angularGenerators.libraryGenerator>[1];
+
+const libraryGeneratorMock = vi.mocked(angularGenerators.libraryGenerator);
+const formatFilesMock = vi.spyOn(devkit, 'formatFiles');
+
+const setupDomainProject = (tree: Tree, domain: string) => {
+  addProjectConfiguration(tree, `${domain}-domain`, {
+    name: `${domain}-domain`,
+    root: `libs/${domain}/domain`,
+    sourceRoot: `libs/${domain}/domain/src`,
+    projectType: 'library',
+    targets: {},
+    tags: ['type:domain-logic', `domain:${domain}`],
+  });
+
+  tree.write(`libs/${domain}/domain/src/index.ts`, 'export {}');
+};
+
+describe('uiGenerator', () => {
   let tree: Tree;
 
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace();
+    vi.clearAllMocks();
+    libraryGeneratorMock.mockResolvedValue(async () => undefined);
+    formatFilesMock.mockResolvedValue();
   });
 
-  it('should run successfully', async () => {
-    await uiGenerator(tree, { name: 'dashboard' });
-    const config = readProjectConfiguration(tree, 'ui-dashboard');
-    console.log({ config });
-    expect(config).toBeDefined();
+  it('creates a domain-scoped ui library', async () => {
+    // Arrange
+    setupDomainProject(tree, 'booking');
+
+    // Act
+    await uiGenerator(tree, { name: 'dashboard', domain: 'booking', directory: 'widgets' });
+
+    // Assert
+    expect(libraryGeneratorMock).toHaveBeenCalledTimes(1);
+    const [, schema] = libraryGeneratorMock.mock.calls[0] as [Tree, LibraryGeneratorSchema];
+    expect(schema).toMatchObject({
+      name: 'booking-widgets-ui-dashboard',
+      directory: joinPathFragments('libs/booking', 'widgets', 'ui-dashboard'),
+      prefix: 'booking',
+      tags: 'type:ui,domain:booking',
+    });
+
+    expect(tree.read('libs/booking/widgets/ui-dashboard/src/index.ts', 'utf-8')).toBe('export {}');
+    expect(tree.read('libs/booking/widgets/ui-dashboard/src/lib/.gitkeep', 'utf-8')).toBe(' ');
+    expect(formatFilesMock).toHaveBeenCalledWith(tree);
   });
 
-  it('should run successfully1', async () => {
-    await domainGenerator(tree, { name: 'booking' });
-    await uiGenerator(tree, { name: 'dashboard', domain: 'booking' });
-    const config = readProjectConfiguration(tree, 'booking-ui-dashboard');
-    console.log({ config });
-    expect(config).toBeDefined();
+  it('uses shared domain defaults and keeps the prefix when skipPrefix is false', async () => {
+    // Act
+    await uiGenerator(tree, { name: 'header', domain: '', directory: '' });
+
+    // Assert
+    const [, schema] = libraryGeneratorMock.mock.calls[0] as [Tree, LibraryGeneratorSchema];
+    expect(schema).toMatchObject({
+      name: 'ui-header',
+      directory: joinPathFragments('shared', 'ui-header'),
+      prefix: 'ui',
+      tags: 'type:ui,domain:shared',
+    });
+
+    const projectRoot = schema.directory as string;
+    expect(tree.read(joinPathFragments(projectRoot, 'src', 'index.ts'), 'utf-8')).toBe('export {}');
   });
 
-  it('test #1 should skip prefix', async () => {
-    await uiGenerator(tree, { name: 'dashboard', directory: 'ui', skipPrefix: true });
-    const config = readProjectConfiguration(tree, 'ui-dashboard');
-    console.log(config);
-    expect(config).toBeDefined();
+  it('omits the prefix when skipPrefix is true', async () => {
+    // Arrange
+    setupDomainProject(tree, 'marketing');
+
+    // Act
+    await uiGenerator(tree, { name: 'hero', domain: 'marketing', directory: 'pages', skipPrefix: true });
+
+    // Assert
+    const [, schema] = libraryGeneratorMock.mock.calls[0] as [Tree, LibraryGeneratorSchema];
+    expect(schema).toMatchObject({
+      name: 'marketing-pages-hero',
+      directory: joinPathFragments('libs/marketing', 'pages', 'hero'),
+      prefix: 'marketing',
+      tags: 'type:ui,domain:marketing',
+    });
   });
-
-  //TODO: test if directory is ui/@
-  it('test #2 should skip prefix', async () => {
-    await uiGenerator(tree, { name: 'dashboard', directory: 'ui' });
-    const config = readProjectConfiguration(tree, 'ui-dashboard');
-    console.log(config);
-    expect(config).toBeDefined();
-  });
-
-  // it('test #2 support angular library schema like buildable', async () => {
-  //   await uiGenerator(tree, { name: 'dashboard', directory: 'ui', skipPrefix: true, buildable: true });
-  //   const config = readProjectConfiguration(tree, 'shared-ui-dashboard');
-  //   expect(config).toBeDefined();
-  //   expect(config.targets.build).toBeDefined();
-  // });
-
-  // it('test #2 support angular library schema like buildable', async () => {
-  //   await uiGenerator(tree, { name: 'dashboard' });
-  //   const config = readProjectConfiguration(tree, 'shared-ui-dashboard');
-  //   console.log({ config });
-  //   expect(config).toBeDefined();
-  // });
 });
