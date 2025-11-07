@@ -1,6 +1,5 @@
-import { formatFiles, joinPathFragments, names, Tree } from '@nx/devkit';
+import { formatFiles, joinPathFragments, names, readNxJson, Tree } from '@nx/devkit';
 import { FeatureGeneratorSchema } from './schema';
-import { componentGenerator, libraryGenerator } from '@nx/angular/generators';
 import { ObjectLiteralExpression } from 'ts-morph';
 import { getNpmScope } from '../../utils/get-npm-scope';
 import { createSourceFile } from '../../utils/create-source-file';
@@ -23,7 +22,9 @@ export async function featureGenerator(tree: Tree, options: FeatureGeneratorSche
   const libraryName = [domain, normalizeDirectory, prefix, name].filter(Boolean).join('-');
   const projectRoot = joinPathFragments(domainDirectory, directory, [prefix, name].filter(Boolean).join('-'));
 
+  const { libraryGenerator, componentGenerator } = await import('@nx/angular/generators');
   await libraryGenerator(tree, {
+    ...(readNxJson(tree)?.generators?.['@nx/angular:library'] || {}),
     ...options,
     name: libraryName,
     directory: projectRoot,
@@ -37,13 +38,14 @@ export async function featureGenerator(tree: Tree, options: FeatureGeneratorSche
 
   const { name: _, ...restOptions } = options;
   await componentGenerator(tree, {
+    ...(readNxJson(tree)?.generators?.['@nx/angular:component'] || {}),
     name: names(name).name,
     path: joinPathFragments(projectRoot, 'src', 'lib', name),
     selector: libraryName,
     ...restOptions,
   });
 
-  tree.write(joinPathFragments(projectRoot, 'src', 'index.ts'), `export * from './lib/${name}.component'`);
+  tree.write(joinPathFragments(projectRoot, 'src', 'index.ts'), `export * from './lib/${name}'`);
 
   tree.write(
     joinPathFragments(domainProjectRoot, 'src', 'lib', 'application', `${name}.facade.ts`),
@@ -65,7 +67,7 @@ export async function featureGenerator(tree: Tree, options: FeatureGeneratorSche
 
   flushIndexSourceFile();
 
-  const componentFilePath = joinPathFragments(projectRoot, 'src', 'lib', `${name}.component.ts`);
+  const componentFilePath = joinPathFragments(projectRoot, 'src', 'lib', `${name}.ts`);
   const { sourceFile: componentSourceFile, flush: flushComponentSourceFile } = createSourceFile(tree, componentFilePath);
 
   componentSourceFile.addImportDeclaration({

@@ -27,7 +27,13 @@ const setupDomainProject = (tree: Tree, domain: string) => {
 
 const mockLibraryGenerator = () => {
   vi.mocked(angularGenerators.libraryGenerator).mockImplementation(async (tree, options: any) => {
-    const tags = typeof options.tags === 'string' ? options.tags.split(',').map((tag: string) => tag.trim()).filter(Boolean) : [];
+    const tags =
+      typeof options.tags === 'string'
+        ? options.tags
+            .split(',')
+            .map((tag: string) => tag.trim())
+            .filter(Boolean)
+        : [];
 
     addProjectConfiguration(tree, options.name, {
       name: options.name,
@@ -48,11 +54,9 @@ const mockLibraryGenerator = () => {
 const mockComponentGenerator = () => {
   vi.mocked(angularGenerators.componentGenerator).mockImplementation(async (tree, options: any) => {
     const className = names(options.name).className;
-    const targetDir = options.path?.endsWith(`/${options.name}`)
-      ? options.path.slice(0, -(`/` + options.name).length)
-      : options.path ?? '';
+    const targetDir = options.path?.endsWith(`/${options.name}`) ? options.path.slice(0, -(`/` + options.name).length) : options.path ?? '';
 
-    const filePath = joinPathFragments(targetDir, `${options.name}.component.ts`);
+    const filePath = joinPathFragments(targetDir, `${options.name}.ts`);
 
     tree.write(
       filePath,
@@ -91,7 +95,7 @@ describe('featureGenerator', () => {
     expect(project.root).toBe('libs/booking/feature-search');
     expect(project.tags).toContain('type:feature');
     expect(project.tags).toContain('domain:booking');
-    expect(tree.exists('libs/booking/feature-search/src/lib/search.component.ts')).toBe(true);
+    expect(tree.exists('libs/booking/feature-search/src/lib/search.ts')).toBe(true);
     expect(formatSpy).toHaveBeenCalledWith(tree);
   });
 
@@ -118,7 +122,7 @@ describe('featureGenerator', () => {
     await featureGenerator(tree, { name: 'announcements', domain: 'shared', directory: '' });
 
     // Assert
-    const component = tree.read('libs/shared/feature-announcements/src/lib/announcements.component.ts', 'utf-8');
+    const component = tree.read('libs/shared/feature-announcements/src/lib/announcements.ts', 'utf-8');
     expect(component).toContain('providers: [AnnouncementsFacade]');
     expect(component).toContain('facade = inject(AnnouncementsFacade)');
   });

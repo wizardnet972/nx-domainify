@@ -1,21 +1,20 @@
-import { formatFiles, getWorkspaceLayout, joinPathFragments, names, Tree } from '@nx/devkit';
+import { formatFiles, getWorkspaceLayout, joinPathFragments, names, readNxJson, Tree } from '@nx/devkit';
 
 import { DomainGeneratorSchema } from './schema';
 
-import { libraryGenerator } from '@nx/angular/generators';
 import { updateDepsConstraints } from '../../utils/update-deps-constraints';
 import { parse } from 'json5';
 
 export async function domainGenerator(tree: Tree, options: DomainGeneratorSchema) {
   const { fileName: domainName } = names(options.name);
-
   const { libsDir } = getWorkspaceLayout(tree);
 
   const domainNameWithoutPrefix = domainName.replace(/-domain$/g, '');
-
   const projectRoot = joinPathFragments(libsDir, domainNameWithoutPrefix, 'domain');
 
+  const { libraryGenerator } = await import('@nx/angular/generators');
   await libraryGenerator(tree, {
+    ...(readNxJson(tree)?.generators?.['@nx/angular:library'] || {}),
     ...options,
     name: `${domainNameWithoutPrefix}-domain`,
     directory: projectRoot,
@@ -27,7 +26,6 @@ export async function domainGenerator(tree: Tree, options: DomainGeneratorSchema
   tree.delete(joinPathFragments(projectRoot, 'src', 'lib', `${domainNameWithoutPrefix}-domain`));
 
   tree.write(joinPathFragments(projectRoot, 'src', 'index.ts'), 'export {}');
-
   tree.write(joinPathFragments(projectRoot, 'src', 'lib', 'application', '.gitkeep'), ' ');
   tree.write(joinPathFragments(projectRoot, 'src', 'lib', 'entities', '.gitkeep'), ' ');
   tree.write(joinPathFragments(projectRoot, 'src', 'lib', 'infrastructure', '.gitkeep'), ' ');

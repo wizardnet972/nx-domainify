@@ -1,6 +1,5 @@
-import { formatFiles, joinPathFragments, names, Tree } from '@nx/devkit';
+import { formatFiles, joinPathFragments, names, readNxJson, Tree } from '@nx/devkit';
 import { ApiGeneratorSchema } from './schema';
-import { libraryGenerator } from '@nx/angular/generators';
 import { cleanupLibrary } from '../../utils/cleanup-library';
 import { resolveDomainOrThrow } from '../../utils/resolve-domain-or-throw';
 
@@ -29,7 +28,9 @@ export async function apiGenerator(tree: Tree, options: ApiGeneratorSchema) {
     .join('-');
   const projectRoot = joinPathFragments(domainDirectory, directory, [!options.skipPrefix && prefix, name].filter(Boolean).join('-'));
 
+  const { libraryGenerator } = await import('@nx/angular/generators');
   await libraryGenerator(tree, {
+    ...(readNxJson(tree)?.generators?.['@nx/angular:library'] || {}),
     name: libraryName,
     directory: projectRoot,
     buildable: true,
