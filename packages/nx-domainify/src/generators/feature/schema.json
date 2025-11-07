@@ -1,27 +1,24 @@
 {
   "$schema": "https://json-schema.org/schema",
   "$id": "Feature",
-  "title": "",
+  "title": "Create an Angular feature library.",
+  "description": "Generates a feature library scoped to the domain.",
   "type": "object",
   "properties": {
-    "name": {
+    "directory": {
       "type": "string",
-      "description": "",
+      "description": "A directory where the library is placed.",
       "$default": {
         "$source": "argv",
         "index": 0
       },
-      "x-prompt": "What name would you like to use?"
+      "x-prompt": "Which directory do you want to create the library in?"
     },
     "domain": {
       "type": "string",
       "aliases": ["domain", "domainName"],
       "description": "choose the domain project"
-    },
-    "directory": {
-      "type": "string",
-      "description": "A directory where the domain library is placed."
     }
   },
-  "required": ["name", "domain"]
+  "required": ["directory", "domain"]
 }

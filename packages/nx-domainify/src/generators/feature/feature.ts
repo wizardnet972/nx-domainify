@@ -10,9 +10,8 @@ import { resolveDomainOrThrow } from '../../utils/resolve-domain-or-throw';
 export async function featureGenerator(tree: Tree, options: FeatureGeneratorSchema) {
   const prefix = 'feature';
 
-  const { fileName: name } = names(options.name);
-  const { fileName: domainName } = names(options.domain ?? '');
   const { fileName: directory = '' } = names(options.directory ?? '');
+  const { fileName: domainName } = names(options.domain ?? '');
 
   const normalizeDirectory = directory.replace(/\//g, '-');
   const npmScope = getNpmScope(tree);
