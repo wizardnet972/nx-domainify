@@ -1,13 +1,13 @@
 import { Tree } from '@nx/devkit';
 import { StringTransformer, tsquery } from '@phenomnomnominal/tsquery';
 
-export const updateDepsConstraints = (tree: Tree, stringTransformer: StringTransformer) => {
-  const eslintConfigPath = 'eslint.config.mjs';
+const CANDIDATES = ['eslint.config.ts', 'eslint.config.mts', 'eslint.config.mjs', 'eslint.config.js', 'eslint.config.cjs'];
 
-  const eslintConfig = tree.read(eslintConfigPath, 'utf-8');
-  if (!eslintConfig) {
-    throw new Error('No ESLint config file found');
-  }
+export const updateDepsConstraints = (tree: Tree, stringTransformer: StringTransformer) => {
+  const filePath = CANDIDATES.find((p) => tree.exists(p));
+  if (!filePath) return;
+  const eslintConfig = tree.read(filePath, 'utf-8');
+  if (!eslintConfig) return;
 
   const updated = tsquery.replace(
     eslintConfig,
@@ -15,5 +15,5 @@ export const updateDepsConstraints = (tree: Tree, stringTransformer: StringTrans
     stringTransformer
   );
 
-  tree.write(eslintConfigPath, updated);
+  tree.write(filePath, updated);
 };
