@@ -1,7 +1,12 @@
 {
   "$schema": "https://json-schema.org/schema",
   "$id": "Init",
-  "title": "",
+  "title": "Nx Domainify Init Generator",
   "type": "object",
-  "properties": {}
+  "properties": {
+    "skipFormat": {
+      "type": "boolean",
+      "description": "Skip formatting the workspace after the generator runs"
+    }
+  }
 }
