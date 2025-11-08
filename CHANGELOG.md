@@ -1,3 +1,13 @@
+## 2.0.14 (2025-11-08)
+
+### 🩹 Fixes
+
+- update generators path in nx-domainify package.json ([b54e455](https://github.com/wizardnet972/nx-domainify/commit/b54e455))
+
+### ❤️ Thank You
+
+- Shlomi Levi @wizardnet972
+
 ## 2.0.13 (2025-11-07)
 
 This was a version bump only, there were no code changes.
