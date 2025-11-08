@@ -54,7 +54,7 @@ describe('utilGenerator', () => {
       directory: joinPathFragments('libs/booking', 'shared-tools', 'util-dates'),
       buildable: true,
       prefix: 'booking',
-      tags: 'type:util,domain:booking',
+      tags: 'domain:booking,type:util',
     });
 
     expect(tree.read('libs/booking/shared-tools/util-dates/src/index.ts', 'utf-8')).toBe('export {}');
@@ -72,7 +72,7 @@ describe('utilGenerator', () => {
       name: 'math',
       directory: joinPathFragments('shared', 'math'),
       prefix: 'util',
-      tags: 'type:util,domain:shared',
+      tags: 'domain:shared,type:util',
     });
 
     const projectRoot = schema.directory as string;

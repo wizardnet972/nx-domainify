@@ -35,7 +35,7 @@ export async function utilGenerator(tree: Tree, options: UtilGeneratorSchema) {
     directory: projectRoot,
     buildable: true,
     prefix: domain === 'shared' ? prefix : domain,
-    tags: `type:${prefix},domain:${domain}`,
+    tags: `domain:${domain},type:${prefix}`,
     ...extra,
   });
 

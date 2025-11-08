@@ -54,7 +54,7 @@ describe('apiGenerator', () => {
       directory: 'libs/booking/api-availability',
       buildable: true,
       prefix: 'booking',
-      tags: 'type:api,domain:booking',
+      tags: 'domain:booking,type:api',
     });
 
     expect(tree.read('libs/booking/api-availability/src/index.ts', 'utf-8')).toBe('export {}');
@@ -75,7 +75,7 @@ describe('apiGenerator', () => {
       name: 'support-help-desk-chat',
       directory: joinPathFragments('libs/support', 'help/desk', 'chat'),
       prefix: 'support',
-      tags: 'type:api,domain:support',
+      tags: 'domain:support,type:api',
     });
 
     expect(tree.read('libs/support/help/desk/chat/src/index.ts', 'utf-8')).toBe('export {}');
@@ -91,7 +91,7 @@ describe('apiGenerator', () => {
       name: 'api-payments',
       directory: joinPathFragments('shared', 'api-payments'),
       prefix: 'api',
-      tags: 'type:api,domain:shared',
+      tags: 'domain:shared,type:api',
     });
 
     expect(tree.read(joinPathFragments('shared', 'api-payments', 'src', 'index.ts'), 'utf-8')).toBe('export {}');

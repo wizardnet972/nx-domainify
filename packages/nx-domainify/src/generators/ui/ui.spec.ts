@@ -53,7 +53,7 @@ describe('uiGenerator', () => {
       name: 'booking-widgets-ui-dashboard',
       directory: joinPathFragments('libs/booking', 'widgets', 'ui-dashboard'),
       prefix: 'booking',
-      tags: 'type:ui,domain:booking',
+      tags: 'domain:booking,type:ui',
     });
 
     expect(tree.read('libs/booking/widgets/ui-dashboard/src/index.ts', 'utf-8')).toBe('export {}');
@@ -71,7 +71,7 @@ describe('uiGenerator', () => {
       name: 'ui-header',
       directory: joinPathFragments('shared', 'ui-header'),
       prefix: 'ui',
-      tags: 'type:ui,domain:shared',
+      tags: 'domain:shared,type:ui',
     });
 
     const projectRoot = schema.directory as string;
@@ -91,7 +91,7 @@ describe('uiGenerator', () => {
       name: 'marketing-pages-hero',
       directory: joinPathFragments('libs/marketing', 'pages', 'hero'),
       prefix: 'marketing',
-      tags: 'type:ui,domain:marketing',
+      tags: 'domain:marketing,type:ui',
     });
   });
 });

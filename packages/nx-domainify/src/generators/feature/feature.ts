@@ -40,7 +40,7 @@ export async function featureGenerator(tree: Tree, options: FeatureGeneratorSche
     directory: projectRoot,
     buildable: true,
     prefix: libraryName,
-    tags: `type:${prefix},domain:${domain}`,
+    tags: `domain:${domain},type:${prefix}`,
     flat: false,
   });
 

@@ -20,7 +20,7 @@ export async function domainGenerator(tree: Tree, options: DomainGeneratorSchema
     directory: projectRoot,
     buildable: true,
     prefix: `${domainNameWithoutPrefix}-domain`,
-    tags: `type:domain-logic,domain:${domainNameWithoutPrefix}`,
+    tags: `domain:${domainNameWithoutPrefix},type:domain-logic`,
   });
 
   tree.delete(joinPathFragments(projectRoot, 'src', 'lib', `${domainNameWithoutPrefix}-domain`));
@@ -34,7 +34,7 @@ export async function domainGenerator(tree: Tree, options: DomainGeneratorSchema
     const value = parse(node.getText());
     value.push({
       sourceTag: `domain:${domainNameWithoutPrefix}`,
-      onlyDependOnLibsWithTags: ['type:domain-logic', `domain:${domainNameWithoutPrefix}`],
+      onlyDependOnLibsWithTags: [`domain:${domainNameWithoutPrefix}`, 'domain:shared'],
     });
     return JSON.stringify(value);
   });

@@ -64,7 +64,7 @@ describe('domainGenerator', () => {
     // Assert
     const updated = tree.read('eslint.config.mjs', 'utf-8')?.replace(/\s+/g, '');
     expect(updated).toContain('"sourceTag":"domain:support"');
-    expect(updated).toContain('"onlyDependOnLibsWithTags":["type:domain-logic","domain:support"]');
+    expect(updated).toContain('"onlyDependOnLibsWithTags":["domain:support","domain:shared"]');
   });
 
   it('formats files when generation completes', async () => {
