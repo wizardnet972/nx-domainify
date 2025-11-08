@@ -1,4 +1,4 @@
-import { formatFiles, getWorkspaceLayout, joinPathFragments, names, readNxJson, Tree } from '@nx/devkit';
+import { formatFiles, getWorkspaceLayout, installPackagesTask, joinPathFragments, names, readNxJson, Tree } from '@nx/devkit';
 
 import { DomainGeneratorSchema } from './schema';
 
@@ -40,6 +40,10 @@ export async function domainGenerator(tree: Tree, options: DomainGeneratorSchema
   });
 
   await formatFiles(tree);
+
+  return () => {
+    installPackagesTask(tree);
+  };
 }
 
 export default domainGenerator;

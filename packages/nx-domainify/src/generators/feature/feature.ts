@@ -1,4 +1,4 @@
-import { formatFiles, joinPathFragments, names, readNxJson, Tree } from '@nx/devkit';
+import { formatFiles, installPackagesTask, joinPathFragments, names, readNxJson, Tree } from '@nx/devkit';
 import { FeatureGeneratorSchema } from './schema';
 import { ObjectLiteralExpression } from 'ts-morph';
 import { getNpmScope } from '../../utils/get-npm-scope';
@@ -108,6 +108,10 @@ export async function featureGenerator(tree: Tree, options: FeatureGeneratorSche
   flushComponentSourceFile();
 
   await formatFiles(tree);
+
+  return () => {
+    installPackagesTask(tree);
+  };
 }
 
 export default featureGenerator;

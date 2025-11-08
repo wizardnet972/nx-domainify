@@ -1,4 +1,4 @@
-import { formatFiles, joinPathFragments, names, readNxJson, Tree } from '@nx/devkit';
+import { formatFiles, installPackagesTask, joinPathFragments, names, readNxJson, Tree } from '@nx/devkit';
 import { UtilGeneratorSchema } from './schema';
 import { libraryGenerator } from '@nx/angular/generators';
 import { cleanupLibrary } from '../../utils/cleanup-library';
@@ -42,6 +42,10 @@ export async function utilGenerator(tree: Tree, options: UtilGeneratorSchema) {
   cleanupLibrary(tree, projectRoot);
 
   await formatFiles(tree);
+
+  return () => {
+    installPackagesTask(tree);
+  };
 }
 
 export default utilGenerator;
