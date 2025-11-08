@@ -32,11 +32,10 @@ export async function domainGenerator(tree: Tree, options: DomainGeneratorSchema
 
   updateDepsConstraints(tree, (node) => {
     const value = parse(node.getText());
-    value.push({
-      sourceTag: `domain:${domainNameWithoutPrefix}`,
-      onlyDependOnLibsWithTags: [`domain:${domainNameWithoutPrefix}`, 'domain:shared'],
-    });
-    return JSON.stringify(value);
+    return JSON.stringify([
+      { sourceTag: `domain:${domainNameWithoutPrefix}`, onlyDependOnLibsWithTags: [`domain:${domainNameWithoutPrefix}`, 'domain:shared'] },
+      ...value,
+    ]);
   });
 
   await formatFiles(tree);
