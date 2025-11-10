@@ -40,18 +40,19 @@ describe('domainGenerator', () => {
     // Arrange
     const options = { name: 'booking' } as const;
     vi.spyOn(devkit, 'formatFiles').mockResolvedValue();
-
+    vi.spyOn(devkit, 'getWorkspaceLayout').mockReturnValue({ libsDir: 'libs', appsDir: 'apps', standaloneAsDefault: false });
+    
     // Act
     await domainGenerator(tree, options);
 
     // Assert
     const project = readProjectConfiguration(tree, 'booking-domain');
-    expect(project.root).toBe('booking/domain');
+    expect(project.root).toBe('libs/booking/domain');
     expect(project.tags).toContain('type:domain-logic');
     expect(project.tags).toContain('domain:booking');
-    expect(tree.exists('booking/domain/src/lib/application/.gitkeep')).toBe(true);
-    expect(tree.exists('booking/domain/src/lib/entities/.gitkeep')).toBe(true);
-    expect(tree.exists('booking/domain/src/lib/infrastructure/.gitkeep')).toBe(true);
+    expect(tree.exists('libs/booking/domain/src/lib/application/.gitkeep')).toBe(true);
+    expect(tree.exists('libs/booking/domain/src/lib/entities/.gitkeep')).toBe(true);
+    expect(tree.exists('libs/booking/domain/src/lib/infrastructure/.gitkeep')).toBe(true);
   });
 
   it('appends a domain-specific dependency constraint', async () => {

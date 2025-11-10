@@ -7,12 +7,16 @@
   "properties": {
     "name": {
       "type": "string",
-      "description": "The name of the domain",
+      "description": "The name of the domain (you can include path segments, e.g. \"libs/sales/orders\")",
       "$default": {
         "$source": "argv",
         "index": 0
       },
       "x-prompt": "What name would you like to use?"
+    },
+    "directory": {
+      "type": "string",
+      "description": "Optional path (relative to the workspace libs directory) where the domain should be created."
     }
   },
   "required": ["name"]
