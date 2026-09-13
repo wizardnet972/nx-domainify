@@ -1,8 +1,7 @@
 import { formatFiles, installPackagesTask, joinPathFragments, names, readNxJson, Tree } from '@nx/devkit';
 import { FeatureGeneratorSchema } from './schema';
-import { ObjectLiteralExpression } from 'ts-morph';
+import { SyntaxKind } from 'ts-morph';
 import { createSourceFile } from '../../utils/create-source-file';
-import { query } from '../../utils/ast';
 import { cleanupLibrary } from '../../utils/cleanup-library';
 import { getProjectImportPathOrThrow } from '../../utils/get-project-import-path';
 import { resolveDomainOrThrow } from '../../utils/resolve-domain-or-throw';
@@ -98,10 +97,13 @@ export async function featureGenerator(tree: Tree, options: FeatureGeneratorSche
     });
   }
 
-  const [componentMetadata] = query(componentSourceFile, 'Decorator CallExpression ObjectLiteralExpression') as ObjectLiteralExpression[];
+  const [classComponent] = componentSourceFile.getClasses();
+  const componentMetadata = classComponent
+    .getDecoratorOrThrow('Component')
+    .getArguments()[0]
+    .asKindOrThrow(SyntaxKind.ObjectLiteralExpression);
   componentMetadata.addPropertyAssignment({ initializer: `[${featureNames.className}Facade]`, name: 'providers' });
 
-  const [classComponent] = componentSourceFile.getClasses();
   classComponent.addProperty({ name: 'facade', initializer: `inject(${`${featureNames.className}Facade`})` });
 
   flushComponentSourceFile();
