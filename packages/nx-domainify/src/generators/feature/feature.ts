@@ -1,10 +1,10 @@
 import { formatFiles, installPackagesTask, joinPathFragments, names, readNxJson, Tree } from '@nx/devkit';
 import { FeatureGeneratorSchema } from './schema';
 import { ObjectLiteralExpression } from 'ts-morph';
-import { getNpmScope } from '../../utils/get-npm-scope';
 import { createSourceFile } from '../../utils/create-source-file';
 import { query } from '../../utils/ast';
 import { cleanupLibrary } from '../../utils/cleanup-library';
+import { getProjectImportPathOrThrow } from '../../utils/get-project-import-path';
 import { resolveDomainOrThrow } from '../../utils/resolve-domain-or-throw';
 
 export async function featureGenerator(tree: Tree, options: FeatureGeneratorSchema) {
@@ -23,9 +23,9 @@ export async function featureGenerator(tree: Tree, options: FeatureGeneratorSche
   const featureNames = names(featureFileName);
 
   const { fileName: domainName } = names(options.domain ?? '');
-  const npmScope = getNpmScope(tree);
 
   const { domainName: domain, directory: domainDirectory, projectRoot: domainProjectRoot } = resolveDomainOrThrow(tree, domainName);
+  const domainImportPath = getProjectImportPathOrThrow(tree, domainProjectRoot, `${domain}-domain`);
 
   const normalizedDirectory = directorySegments.join('-');
   const libraryName = [domain, normalizedDirectory, prefix, featureFileName].filter(Boolean).join('-');
@@ -38,7 +38,6 @@ export async function featureGenerator(tree: Tree, options: FeatureGeneratorSche
     ...libraryDefaults,
     name: libraryName,
     directory: projectRoot,
-    buildable: true,
     prefix: libraryName,
     tags: `domain:${domain},type:${prefix}`,
     flat: false,
@@ -81,7 +80,7 @@ export async function featureGenerator(tree: Tree, options: FeatureGeneratorSche
 
   componentSourceFile.addImportDeclaration({
     namedImports: [`${featureNames.className}Facade`],
-    moduleSpecifier: `@${npmScope}/${domain}-domain`,
+    moduleSpecifier: domainImportPath,
   });
 
   const angularCoreImport = componentSourceFile.getImportDeclaration((id) => id.getModuleSpecifierValue() === '@angular/core');

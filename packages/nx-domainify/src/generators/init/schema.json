@@ -1,12 +1,14 @@
 {
   "$schema": "https://json-schema.org/schema",
   "$id": "Init",
-  "title": "Nx Domainify Init Generator",
+  "title": "Initialize nx-domainify",
+  "description": "Adds DDD ESLint module-boundary constraints to the workspace.",
   "type": "object",
   "properties": {
     "skipFormat": {
       "type": "boolean",
-      "description": "Skip formatting the workspace after the generator runs"
+      "description": "Skip formatting files after the generator runs.",
+      "default": false
     }
   }
 }

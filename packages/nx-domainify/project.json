@@ -33,6 +33,11 @@
           },
           {
             "input": "./packages/nx-domainify",
+            "glob": "LICENSE",
+            "output": "."
+          },
+          {
+            "input": "./packages/nx-domainify",
             "glob": "generators.json",
             "output": "."
           },

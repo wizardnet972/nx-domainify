@@ -20,7 +20,6 @@ export async function domainGenerator(tree: Tree, options: DomainGeneratorSchema
     ...options,
     name: `${name}-${suffix}`,
     directory,
-    buildable: true,
     prefix: `${name}-${suffix}`,
     tags: `domain:${name},type:domain-logic`,
   });

@@ -3,32 +3,32 @@
     "api": {
       "factory": "./src/generators/api/api",
       "schema": "./src/generators/api/schema.json",
-      "description": "api generator"
+      "description": "Creates an Angular API library inside an existing domain."
     },
     "domain": {
       "factory": "./src/generators/domain/domain",
       "schema": "./src/generators/domain/schema.json",
-      "description": "domain generator"
+      "description": "Creates an Angular domain library with application, entities, and infrastructure folders."
     },
     "init": {
       "factory": "./src/generators/init/init",
       "schema": "./src/generators/init/schema.json",
-      "description": "init generator"
+      "description": "Adds DDD ESLint module-boundary constraints to the workspace."
     },
     "ui": {
       "factory": "./src/generators/ui/ui",
       "schema": "./src/generators/ui/schema.json",
-      "description": "ui generator"
+      "description": "Creates an Angular UI library inside an existing domain."
     },
     "util": {
       "factory": "./src/generators/util/util",
       "schema": "./src/generators/util/schema.json",
-      "description": "util generator"
+      "description": "Creates an Angular util library inside an existing domain."
     },
     "feature": {
       "factory": "./src/generators/feature/feature",
       "schema": "./src/generators/feature/schema.json",
-      "description": "feature generator"
+      "description": "Creates an Angular feature library, a feature component, and a domain facade."
     }
   }
 }

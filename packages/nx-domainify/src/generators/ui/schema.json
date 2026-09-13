@@ -1,26 +1,32 @@
 {
   "$schema": "https://json-schema.org/schema",
   "$id": "Ui",
-  "title": "",
+  "title": "Create a UI library",
+  "description": "Creates an Angular UI library inside an existing domain.",
   "type": "object",
   "properties": {
     "name": {
       "type": "string",
-      "description": "",
+      "description": "UI library name, for example button.",
       "$default": {
         "$source": "argv",
         "index": 0
       },
-      "x-prompt": "What name would you like to use?"
+      "x-prompt": "What UI name would you like to use?"
     },
     "domain": {
       "type": "string",
-      "aliases": ["domain", "domainName"],
-      "description": "choose the domain project"
+      "aliases": ["domainName"],
+      "description": "Existing domain name, for example booking. Omit this to place the library in shared."
     },
     "directory": {
       "type": "string",
-      "description": "A directory where the ui library is placed."
+      "description": "Optional nested path under the domain folder where the UI library is created."
+    },
+    "skipPrefix": {
+      "type": "boolean",
+      "description": "Skip the ui- prefix in the project name and folder.",
+      "default": false
     }
   },
   "required": ["name"]

@@ -6,13 +6,13 @@ vi.mock('@nx/angular/generators', () => ({
 }));
 
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { addProjectConfiguration, joinPathFragments, names, readProjectConfiguration, Tree } from '@nx/devkit';
+import { addProjectConfiguration, joinPathFragments, names, readProjectConfiguration, Tree, updateJson } from '@nx/devkit';
 import * as devkit from '@nx/devkit';
 import * as angularGenerators from '@nx/angular/generators';
 
 import { featureGenerator } from './feature';
 
-const setupDomainProject = (tree: Tree, domain: string) => {
+const setupDomainProject = (tree: Tree, domain: string, importPath = `@proj/${domain}-domain`) => {
   addProjectConfiguration(tree, `${domain}-domain`, {
     name: `${domain}-domain`,
     root: `libs/${domain}/domain`,
@@ -23,6 +23,7 @@ const setupDomainProject = (tree: Tree, domain: string) => {
   });
 
   tree.write(`libs/${domain}/domain/src/index.ts`, 'export {}');
+  tree.write(`libs/${domain}/domain/package.json`, JSON.stringify({ name: importPath }));
 };
 
 const mockLibraryGenerator = () => {
@@ -99,6 +100,26 @@ describe('featureGenerator', () => {
     expect(project.tags).toContain('domain:booking');
     expect(tree.exists('libs/booking/experience/feature-search/src/lib/search.ts')).toBe(true);
     expect(formatSpy).toHaveBeenCalledWith(tree);
+    expect(vi.mocked(angularGenerators.libraryGenerator).mock.calls[0][1].buildable).toBeUndefined();
+  });
+
+  it('forwards buildable from nx.json angular library defaults', async () => {
+    // Arrange
+    setupDomainProject(tree, 'orders');
+    vi.spyOn(devkit, 'formatFiles').mockResolvedValue();
+    updateJson(tree, 'nx.json', (nxJson) => {
+      nxJson.generators = {
+        ...(nxJson.generators ?? {}),
+        '@nx/angular:library': { buildable: true },
+      };
+      return nxJson;
+    });
+
+    // Act
+    await featureGenerator(tree, { domain: 'orders', directory: 'shell' });
+
+    // Assert
+    expect(vi.mocked(angularGenerators.libraryGenerator).mock.calls[0][1].buildable).toBe(true);
   });
 
   it('wires the facade into the domain project', async () => {
@@ -127,5 +148,37 @@ describe('featureGenerator', () => {
     const component = tree.read('libs/shared/feature-announcements/src/lib/announcements.ts', 'utf-8');
     expect(component).toContain('providers: [AnnouncementsFacade]');
     expect(component).toContain('facade = inject(AnnouncementsFacade)');
+    expect(component?.replace(/"/g, "'")).toContain("from '@proj/shared-domain'");
+  });
+
+  it('imports the facade from the domain package name when the workspace is unscoped', async () => {
+    // Arrange
+    setupDomainProject(tree, 'catalog', 'catalog-domain');
+
+    // Act
+    await featureGenerator(tree, { domain: 'catalog', directory: 'shell' });
+
+    // Assert
+    const component = tree.read('libs/catalog/feature-shell/src/lib/shell.ts', 'utf-8');
+    expect(component?.replace(/"/g, "'")).toContain("from 'catalog-domain'");
+    expect(component).not.toContain('@undefined/');
+  });
+
+  it('throws when the domain project has no import path', async () => {
+    // Arrange
+    addProjectConfiguration(tree, 'booking-domain', {
+      name: 'booking-domain',
+      root: 'libs/booking/domain',
+      sourceRoot: 'libs/booking/domain/src',
+      projectType: 'library',
+      targets: {},
+      tags: ['type:domain-logic', 'domain:booking'],
+    });
+    tree.write('libs/booking/domain/src/index.ts', 'export {}');
+
+    // Act / Assert
+    await expect(featureGenerator(tree, { domain: 'booking', directory: 'shell' })).rejects.toThrow(
+      /Could not determine the import path for "booking-domain"/
+    );
   });
 });

@@ -13,28 +13,124 @@ npx nx g nx-domainify:init
 
 `init` writes DDD dependency constraints into your workspace ESLint config (`@nx/enforce-module-boundaries`).
 
+Create a domain first, then APIs, features, UI, and utils under it. Omit `--domain` on `api`, `ui`, and `util` to place the library in `shared`. Use `--help` on a generator if you want to see every option. Libraries follow the `@nx/angular:library` defaults in `nx.json`, including `buildable`.
+
 ## Generators
 
-Create a domain first, then APIs, features, UI, and utils under it.
+### `nx-domainify:init`
+
+Adds DDD ESLint module-boundary constraints to the workspace.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `--skipFormat` | boolean | `false` | Skip formatting files after the generator runs. |
+
+```sh
+npx nx g nx-domainify:init
+npx nx g nx-domainify:init --skipFormat
+```
+
+### `nx-domainify:domain`
+
+Creates an Angular domain library with `application`, `entities`, and `infrastructure` folders.
+
+Tags: `domain:<name>`, `type:domain-logic`
+
+| Option | Type | Required | Description |
+| --- | --- | --- | --- |
+| `name` | string | yes | Domain name, for example `booking`. Do not include path segments; use `--directory` to nest the domain. Positional argument. |
+| `--directory` | string | no | Nested path under the workspace libs directory, for example `sales`. Creates `libs/<directory>/<name>/domain`. |
 
 ```sh
 npx nx g nx-domainify:domain booking
-npx nx g nx-domainify:feature shell --domain=booking
-npx nx g nx-domainify:api availability --domain=booking
-npx nx g nx-domainify:ui button --domain=booking
-npx nx g nx-domainify:util dates --domain=booking
+npx nx g nx-domainify:domain booking --directory=sales
+npx nx g nx-domainify:domain shared
 ```
 
-| Generator | What it creates | Tags |
-| --- | --- | --- |
-| `domain` | Buildable domain library with `application`, `entities`, and `infrastructure` folders | `domain:<name>`, `type:domain-logic` |
-| `feature` | Feature library + component scoped to a domain | `domain:<name>`, `type:feature` |
-| `api` | API library for a domain | `domain:<name>`, `type:api` |
-| `ui` | UI library for a domain | `domain:<name>`, `type:ui` |
-| `util` | Utility library for a domain | `domain:<name>`, `type:util` |
-| `init` | Module-boundary rules for apps → features/api/ui → domain → util | — |
+### `nx-domainify:feature`
 
-Pass `--directory` to nest libraries. `api` and `util` accept `--skipPrefix` to omit the `api-` / `util-` name prefix. `feature` takes a path whose last segment is the feature name (for example `shell` or `admin/users`).
+Creates an Angular feature library, a feature component, and a domain facade.
+
+Tags: `domain:<name>`, `type:feature`
+
+The domain library must already exist.
+
+| Option | Type | Required | Description |
+| --- | --- | --- | --- |
+| `directory` | string | yes | Feature name, or a nested path whose last segment is the feature name, for example `search` or `admin/users`. Positional argument. |
+| `--domain` | string | yes | Existing domain name, for example `booking`. Alias: `--domainName`. |
+
+```sh
+npx nx g nx-domainify:feature shell --domain=booking
+npx nx g nx-domainify:feature admin/users --domain=booking
+npx nx g nx-domainify:feature search --domainName=booking
+```
+
+### `nx-domainify:api`
+
+Creates an Angular API library inside an existing domain, or in `shared` when `--domain` is omitted.
+
+Tags: `domain:<name|shared>`, `type:api`
+
+| Option | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `name` | string | yes | — | API library name, for example `gateway`. Positional argument. |
+| `--domain` | string | no | `shared` | Existing domain name, for example `booking`. Omit this to place the library in `shared`. Alias: `--domainName`. |
+| `--directory` | string | no | — | Nested path under the domain folder where the API library is created. |
+| `--skipPrefix` | boolean | no | `false` | Skip the `api-` prefix in the project name and folder. |
+
+```sh
+npx nx g nx-domainify:api gateway --domain=booking
+npx nx g nx-domainify:api availability --domain=booking --directory=public
+npx nx g nx-domainify:api gateway --domain=booking --skipPrefix
+npx nx g nx-domainify:api gateway --domain=booking --directory=public --skipPrefix
+npx nx g nx-domainify:api gateway
+npx nx g nx-domainify:api gateway --directory=http --skipPrefix
+```
+
+### `nx-domainify:ui`
+
+Creates an Angular UI library inside an existing domain, or in `shared` when `--domain` is omitted.
+
+Tags: `domain:<name|shared>`, `type:ui`
+
+| Option | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `name` | string | yes | — | UI library name, for example `button`. Positional argument. |
+| `--domain` | string | no | `shared` | Existing domain name, for example `booking`. Omit this to place the library in `shared`. Alias: `--domainName`. |
+| `--directory` | string | no | — | Nested path under the domain folder where the UI library is created. |
+| `--skipPrefix` | boolean | no | `false` | Skip the `ui-` prefix in the project name and folder. |
+
+```sh
+npx nx g nx-domainify:ui button --domain=booking
+npx nx g nx-domainify:ui card --domain=booking --directory=forms
+npx nx g nx-domainify:ui button --domain=booking --skipPrefix
+npx nx g nx-domainify:ui button --domain=booking --directory=forms --skipPrefix
+npx nx g nx-domainify:ui button
+npx nx g nx-domainify:ui button --directory=kit --skipPrefix
+```
+
+### `nx-domainify:util`
+
+Creates an Angular util library inside an existing domain, or in `shared` when `--domain` is omitted.
+
+Tags: `domain:<name|shared>`, `type:util`
+
+| Option | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `name` | string | yes | — | Util library name, for example `date`. Positional argument. |
+| `--domain` | string | no | `shared` | Existing domain name, for example `booking`. Omit this to place the library in `shared`. Alias: `--domainName`. |
+| `--directory` | string | no | — | Nested path under the domain folder where the util library is created. |
+| `--skipPrefix` | boolean | no | `false` | Skip the `util-` prefix in the project name and folder. |
+
+```sh
+npx nx g nx-domainify:util dates --domain=booking
+npx nx g nx-domainify:util dates --domain=booking --directory=time
+npx nx g nx-domainify:util dates --domain=booking --skipPrefix
+npx nx g nx-domainify:util dates --domain=booking --directory=time --skipPrefix
+npx nx g nx-domainify:util dates
+npx nx g nx-domainify:util dates --directory=time --skipPrefix
+```
 
 ## Module boundaries
 
@@ -46,6 +142,8 @@ Pass `--directory` to nest libraries. `api` and `util` accept `--skipPrefix` to 
 - `type:domain-logic` → util
 - `domain:shared` → `domain:shared` only
 - each domain may also depend on itself and `domain:shared`
+
+Creating a domain also appends a constraint so `domain:<name>` may only depend on `domain:<name>` and `domain:shared`.
 
 ## Develop this repo
 

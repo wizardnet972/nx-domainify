@@ -15,19 +15,35 @@ npx nx g nx-domainify:init
 
 ```sh
 npx nx g nx-domainify:domain booking
+npx nx g nx-domainify:domain booking --directory=sales
+
 npx nx g nx-domainify:feature shell --domain=booking
-npx nx g nx-domainify:api availability --domain=booking
+npx nx g nx-domainify:feature admin/users --domain=booking
+
+npx nx g nx-domainify:api gateway --domain=booking
+npx nx g nx-domainify:api gateway --domain=booking --directory=public --skipPrefix
+npx nx g nx-domainify:api gateway
+
 npx nx g nx-domainify:ui button --domain=booking
+npx nx g nx-domainify:ui button --domain=booking --directory=forms --skipPrefix
+npx nx g nx-domainify:ui button
+
 npx nx g nx-domainify:util dates --domain=booking
+npx nx g nx-domainify:util dates --domain=booking --directory=time --skipPrefix
+npx nx g nx-domainify:util dates
+
+npx nx g nx-domainify:init --skipFormat
 ```
 
-| Generator | Purpose |
+| Generator | Options |
 | --- | --- |
-| `init` | DDD ESLint module-boundary rules |
-| `domain` | Domain library (`type:domain-logic`) |
-| `feature` | Feature library + component |
-| `api` | API library |
-| `ui` | UI library |
-| `util` | Utility library |
+| `init` | `--skipFormat` |
+| `domain` | `name`, `--directory` |
+| `feature` | `directory`, `--domain` (`--domainName`) |
+| `api` | `name`, `--domain`, `--directory`, `--skipPrefix` |
+| `ui` | `name`, `--domain`, `--directory`, `--skipPrefix` |
+| `util` | `name`, `--domain`, `--directory`, `--skipPrefix` |
 
-See the [repository README](https://github.com/wizardnet972/nx-domainify) for options and tag rules.
+Omit `--domain` on `api`, `ui`, and `util` to place the library in `shared`. Libraries follow the `@nx/angular:library` defaults in `nx.json`, including `buildable`.
+
+See the [repository README](https://github.com/wizardnet972/nx-domainify) for full option tables, tag rules, and more examples.

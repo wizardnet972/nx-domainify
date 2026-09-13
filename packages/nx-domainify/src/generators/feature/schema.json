@@ -1,23 +1,24 @@
 {
   "$schema": "https://json-schema.org/schema",
   "$id": "Feature",
-  "title": "Create an Angular feature library.",
-  "description": "Generates a feature library scoped to the domain.",
+  "title": "Create a feature library",
+  "description": "Creates an Angular feature library, a feature component, and a domain facade.",
   "type": "object",
   "properties": {
     "directory": {
       "type": "string",
-      "description": "Feature path including the feature name as the last segment (e.g. domain/feature-name).",
+      "description": "Feature name, or a nested path whose last segment is the feature name, for example search or admin/users.",
       "$default": {
         "$source": "argv",
         "index": 0
       },
-      "x-prompt": "Provide the directory that includes the feature name."
+      "x-prompt": "What feature name or nested path would you like to use?"
     },
     "domain": {
       "type": "string",
-      "aliases": ["domain", "domainName"],
-      "description": "choose the domain project"
+      "aliases": ["domainName"],
+      "description": "Existing domain name, for example booking. The domain library must already exist.",
+      "x-prompt": "Which domain should this feature belong to?"
     }
   },
   "required": ["directory", "domain"]

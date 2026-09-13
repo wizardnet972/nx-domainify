@@ -1,6 +1,23 @@
 {
   "name": "nx-domainify",
   "version": "2.0.17",
+  "description": "Nx plugin that scaffolds Angular libraries using a domain-driven layout and ESLint module-boundary tags.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wizardnet972/nx-domainify.git"
+  },
+  "homepage": "https://github.com/wizardnet972/nx-domainify#readme",
+  "bugs": {
+    "url": "https://github.com/wizardnet972/nx-domainify/issues"
+  },
+  "keywords": [
+    "nx",
+    "nx-plugin",
+    "angular",
+    "ddd",
+    "module-boundaries"
+  ],
   "type": "commonjs",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",

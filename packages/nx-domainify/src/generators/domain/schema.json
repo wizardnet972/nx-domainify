@@ -1,22 +1,22 @@
 {
   "$schema": "https://json-schema.org/schema",
   "$id": "Domain",
-  "title": "Create an Angular domain library.",
-  "description": "Generates a domain library scoped to the domain.",
+  "title": "Create a domain library",
+  "description": "Creates an Angular domain library with application, entities, and infrastructure folders.",
   "type": "object",
   "properties": {
     "name": {
       "type": "string",
-      "description": "The name of the domain (you can include path segments, e.g. \"libs/sales/orders\")",
+      "description": "Domain name, for example booking. Do not include path segments; use --directory to nest the domain.",
       "$default": {
         "$source": "argv",
         "index": 0
       },
-      "x-prompt": "What name would you like to use?"
+      "x-prompt": "What domain name would you like to use?"
     },
     "directory": {
       "type": "string",
-      "description": "Optional path (relative to the workspace libs directory) where the domain should be created."
+      "description": "Optional nested path under the workspace libs directory, for example sales. Creates libs/<directory>/<name>/domain."
     }
   },
   "required": ["name"]

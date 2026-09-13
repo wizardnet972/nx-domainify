@@ -5,7 +5,7 @@ vi.mock('@nx/angular/generators', () => ({
 }));
 
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { addProjectConfiguration, joinPathFragments, Tree } from '@nx/devkit';
+import { addProjectConfiguration, joinPathFragments, Tree, updateJson } from '@nx/devkit';
 import * as devkit from '@nx/devkit';
 import * as angularGenerators from '@nx/angular/generators';
 
@@ -52,14 +52,33 @@ describe('apiGenerator', () => {
     expect(schema).toMatchObject({
       name: 'booking-api-availability',
       directory: 'libs/booking/api-availability',
-      buildable: true,
       prefix: 'booking',
       tags: 'domain:booking,type:api',
     });
 
     expect(tree.read('libs/booking/api-availability/src/index.ts', 'utf-8')).toBe('export {}');
     expect(tree.read('libs/booking/api-availability/src/lib/.gitkeep', 'utf-8')).toBe(' ');
+    expect(schema.buildable).toBeUndefined();
     expect(formatFilesMock).toHaveBeenCalledWith(tree);
+  });
+
+  it('forwards buildable from nx.json angular library defaults', async () => {
+    // Arrange
+    setupDomainProject(tree, 'booking');
+    updateJson(tree, 'nx.json', (nxJson) => {
+      nxJson.generators = {
+        ...(nxJson.generators ?? {}),
+        '@nx/angular:library': { buildable: true },
+      };
+      return nxJson;
+    });
+
+    // Act
+    await apiGenerator(tree, { name: 'availability', domain: 'booking', directory: '' });
+
+    // Assert
+    const [, schema] = libraryGeneratorMock.mock.calls[0] as [Tree, LibraryGeneratorSchema];
+    expect(schema.buildable).toBe(true);
   });
 
   it('omits the api prefix when skipPrefix is true', async () => {

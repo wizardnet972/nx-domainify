@@ -5,7 +5,7 @@ vi.mock('@nx/angular/generators', () => ({
 }));
 
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { addProjectConfiguration, joinPathFragments, readProjectConfiguration, Tree } from '@nx/devkit';
+import { addProjectConfiguration, joinPathFragments, readProjectConfiguration, Tree, updateJson } from '@nx/devkit';
 import * as devkit from '@nx/devkit';
 import * as angularGenerators from '@nx/angular/generators';
 
@@ -40,6 +40,7 @@ describe('domainGenerator', () => {
     tree = createTreeWithEmptyWorkspace();
     tree.write('eslint.config.mjs', ESLINT_CONFIG);
     vi.restoreAllMocks();
+    vi.clearAllMocks();
     vi.mocked(angularGenerators.libraryGenerator).mockImplementation(async (host, options: any) => {
       const tags =
         typeof options.tags === 'string'
@@ -82,6 +83,25 @@ describe('domainGenerator', () => {
     expect(tree.exists('libs/booking/domain/src/lib/application/.gitkeep')).toBe(true);
     expect(tree.exists('libs/booking/domain/src/lib/entities/.gitkeep')).toBe(true);
     expect(tree.exists('libs/booking/domain/src/lib/infrastructure/.gitkeep')).toBe(true);
+    expect(vi.mocked(angularGenerators.libraryGenerator).mock.calls[0][1].buildable).toBeUndefined();
+  });
+
+  it('forwards buildable from nx.json angular library defaults', async () => {
+    // Arrange
+    vi.spyOn(devkit, 'formatFiles').mockResolvedValue();
+    updateJson(tree, 'nx.json', (nxJson) => {
+      nxJson.generators = {
+        ...(nxJson.generators ?? {}),
+        '@nx/angular:library': { buildable: true },
+      };
+      return nxJson;
+    });
+
+    // Act
+    await domainGenerator(tree, { name: 'booking' });
+
+    // Assert
+    expect(vi.mocked(angularGenerators.libraryGenerator).mock.calls[0][1].buildable).toBe(true);
   });
 
   it('appends a domain-specific dependency constraint', async () => {

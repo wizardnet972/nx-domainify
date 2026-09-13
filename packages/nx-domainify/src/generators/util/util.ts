@@ -33,7 +33,6 @@ export async function utilGenerator(tree: Tree, options: UtilGeneratorSchema) {
     ...(readNxJson(tree)?.generators?.['@nx/angular:library'] || {}),
     name: libraryName,
     directory: projectRoot,
-    buildable: true,
     prefix: domain === 'shared' ? prefix : domain,
     tags: `domain:${domain},type:${prefix}`,
     ...extra,
