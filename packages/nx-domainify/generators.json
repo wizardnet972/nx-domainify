@@ -1,33 +1,33 @@
 {
   "generators": {
     "api": {
-      "factory": "./dist/generators/api/api",
-      "schema": "./dist/generators/api/schema.json",
+      "factory": "./src/generators/api/api",
+      "schema": "./src/generators/api/schema.json",
       "description": "api generator"
     },
     "domain": {
-      "factory": "./dist/generators/domain/domain",
-      "schema": "./dist/generators/domain/schema.json",
+      "factory": "./src/generators/domain/domain",
+      "schema": "./src/generators/domain/schema.json",
       "description": "domain generator"
     },
     "init": {
-      "factory": "./dist/generators/init/init",
-      "schema": "./dist/generators/init/schema.json",
+      "factory": "./src/generators/init/init",
+      "schema": "./src/generators/init/schema.json",
       "description": "init generator"
     },
     "ui": {
-      "factory": "./dist/generators/ui/ui",
-      "schema": "./dist/generators/ui/schema.json",
+      "factory": "./src/generators/ui/ui",
+      "schema": "./src/generators/ui/schema.json",
       "description": "ui generator"
     },
     "util": {
-      "factory": "./dist/generators/util/util",
-      "schema": "./dist/generators/util/schema.json",
+      "factory": "./src/generators/util/util",
+      "schema": "./src/generators/util/schema.json",
       "description": "util generator"
     },
     "feature": {
-      "factory": "./dist/generators/feature/feature",
-      "schema": "./dist/generators/feature/schema.json",
+      "factory": "./src/generators/feature/feature",
+      "schema": "./src/generators/feature/schema.json",
       "description": "feature generator"
     }
   }

@@ -1,7 +1,7 @@
+import { vi } from 'vitest';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { Tree } from '@nx/devkit';
 import * as devkit from '@nx/devkit';
-import { vi } from 'vitest';
 
 import { initGenerator } from './init';
 

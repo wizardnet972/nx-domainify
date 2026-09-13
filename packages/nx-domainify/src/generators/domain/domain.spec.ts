@@ -1,7 +1,13 @@
-import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
-import { readProjectConfiguration, Tree } from '@nx/devkit';
-import * as devkit from '@nx/devkit';
 import { vi } from 'vitest';
+
+vi.mock('@nx/angular/generators', () => ({
+  libraryGenerator: vi.fn(),
+}));
+
+import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
+import { addProjectConfiguration, joinPathFragments, readProjectConfiguration, Tree } from '@nx/devkit';
+import * as devkit from '@nx/devkit';
+import * as angularGenerators from '@nx/angular/generators';
 
 import { domainGenerator } from './domain';
 
@@ -34,6 +40,29 @@ describe('domainGenerator', () => {
     tree = createTreeWithEmptyWorkspace();
     tree.write('eslint.config.mjs', ESLINT_CONFIG);
     vi.restoreAllMocks();
+    vi.mocked(angularGenerators.libraryGenerator).mockImplementation(async (host, options: any) => {
+      const tags =
+        typeof options.tags === 'string'
+          ? options.tags
+              .split(',')
+              .map((tag: string) => tag.trim())
+              .filter(Boolean)
+          : [];
+
+      addProjectConfiguration(host, options.name, {
+        name: options.name,
+        root: options.directory,
+        sourceRoot: joinPathFragments(options.directory, 'src'),
+        projectType: 'library',
+        targets: {},
+        tags,
+      });
+
+      host.write(joinPathFragments(options.directory, 'src', 'index.ts'), 'export {}');
+      host.write(joinPathFragments(options.directory, 'src', 'lib', `${options.name}`, '.gitkeep'), ' ');
+
+      return () => Promise.resolve();
+    });
   });
 
   it('creates a domain library with the expected configuration', async () => {
@@ -41,7 +70,7 @@ describe('domainGenerator', () => {
     const options = { name: 'booking' } as const;
     vi.spyOn(devkit, 'formatFiles').mockResolvedValue();
     vi.spyOn(devkit, 'getWorkspaceLayout').mockReturnValue({ libsDir: 'libs', appsDir: 'apps', standaloneAsDefault: false });
-    
+
     // Act
     await domainGenerator(tree, options);
 

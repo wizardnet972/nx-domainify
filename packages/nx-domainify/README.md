@@ -1,11 +1,33 @@
 # nx-domainify
 
-This library was generated with [Nx](https://nx.dev).
+Nx plugin that scaffolds Angular libraries using a domain-driven layout and ESLint module-boundary tags.
 
-## Building
+Requires an Nx workspace with `@nx/angular` (Nx 23).
 
-Run `nx build nx-domainify` to build the library.
+## Install
 
-## Running unit tests
+```sh
+npm install -D nx-domainify
+npx nx g nx-domainify:init
+```
 
-Run `nx test nx-domainify` to execute the unit tests via [Vitest](https://vitest.dev/).
+## Generators
+
+```sh
+npx nx g nx-domainify:domain booking
+npx nx g nx-domainify:feature shell --domain=booking
+npx nx g nx-domainify:api availability --domain=booking
+npx nx g nx-domainify:ui button --domain=booking
+npx nx g nx-domainify:util dates --domain=booking
+```
+
+| Generator | Purpose |
+| --- | --- |
+| `init` | DDD ESLint module-boundary rules |
+| `domain` | Domain library (`type:domain-logic`) |
+| `feature` | Feature library + component |
+| `api` | API library |
+| `ui` | UI library |
+| `util` | Utility library |
+
+See the [repository README](https://github.com/wizardnet972/nx-domainify) for options and tag rules.

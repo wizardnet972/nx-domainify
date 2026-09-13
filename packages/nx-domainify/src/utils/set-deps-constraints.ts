@@ -1,19 +1,15 @@
 import { Tree } from '@nx/devkit';
-import { DepConstraint } from '@nx/eslint-plugin/src/utils/runtime-lint-utils';
-import { updateOverrideInLintConfig } from '@nx/eslint/src/generators/utils/eslint-file';
+import { updateDepsConstraints } from './update-deps-constraints';
+
+export type DepConstraint = {
+  sourceTag?: string;
+  allSourceTags?: string[];
+  onlyDependOnLibsWithTags?: string[];
+  notDependOnLibsWithTags?: string[];
+  allowedExternalImports?: string[];
+  bannedExternalImports?: string[];
+};
 
 export const setDepsConstraints = (tree: Tree, constraints: DepConstraint[]) => {
-  updateOverrideInLintConfig(
-    tree,
-    '.',
-    (o) => Object.keys(o.rules ?? {})?.includes('@nx/enforce-module-boundaries'),
-    (o) => {
-      //@ts-expect-error nothing to tell
-      o.rules['@nx/enforce-module-boundaries'][1]['depConstraints'] = constraints;
-
-      return {
-        ...o,
-      };
-    }
-  );
+  updateDepsConstraints(tree, () => JSON.stringify(constraints));
 };

@@ -54,7 +54,9 @@ const mockLibraryGenerator = () => {
 const mockComponentGenerator = () => {
   vi.mocked(angularGenerators.componentGenerator).mockImplementation(async (tree, options: any) => {
     const className = names(options.name).className;
-    const targetDir = options.path?.endsWith(`/${options.name}`) ? options.path.slice(0, -(`/` + options.name).length) : options.path ?? '';
+    const targetDir = options.path?.endsWith(`/${options.name}`)
+      ? options.path.slice(0, -(`/` + options.name).length)
+      : (options.path ?? '');
 
     const filePath = joinPathFragments(targetDir, `${options.name}.ts`);
 
