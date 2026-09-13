@@ -1,3 +1,20 @@
+## 2.1.0 (2026-09-13)
+
+### 🚀 Features
+
+- improve generators and package documentation ([4014be3](https://github.com/wizardnet972/nx-domainify/commit/4014be3))
+- install an AI skill from init for nx-domainify generators ([ac3a676](https://github.com/wizardnet972/nx-domainify/commit/ac3a676))
+
+### 🩹 Fixes
+
+- resolve relative project import paths ([0d7a3fd](https://github.com/wizardnet972/nx-domainify/commit/0d7a3fd))
+- update generated feature metadata safely ([0e796e1](https://github.com/wizardnet972/nx-domainify/commit/0e796e1))
+- align feature selectors with domain prefix ([592eedb](https://github.com/wizardnet972/nx-domainify/commit/592eedb))
+
+### ❤️ Thank You
+
+- wizardnet972 @wizardnet972
+
 ## 2.0.17 (2025-11-10)
 
 This was a version bump only, there were no code changes.
