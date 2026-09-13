@@ -37,7 +37,7 @@ export async function featureGenerator(tree: Tree, options: FeatureGeneratorSche
     ...libraryDefaults,
     name: libraryName,
     directory: projectRoot,
-    prefix: libraryName,
+    prefix: domain,
     tags: `domain:${domain},type:${prefix}`,
     flat: false,
   });

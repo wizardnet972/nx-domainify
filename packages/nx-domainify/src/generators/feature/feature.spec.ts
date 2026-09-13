@@ -98,6 +98,7 @@ describe('featureGenerator', () => {
     expect(project.root).toBe('libs/booking/experience/feature-search');
     expect(project.tags).toContain('type:feature');
     expect(project.tags).toContain('domain:booking');
+    expect(vi.mocked(angularGenerators.libraryGenerator).mock.calls[0][1].prefix).toBe('booking');
     expect(tree.exists('libs/booking/experience/feature-search/src/lib/search.ts')).toBe(true);
     expect(formatSpy).toHaveBeenCalledWith(tree);
     expect(vi.mocked(angularGenerators.libraryGenerator).mock.calls[0][1].buildable).toBeUndefined();
