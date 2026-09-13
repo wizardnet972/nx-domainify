@@ -4,6 +4,8 @@ Nx plugin that scaffolds Angular libraries using a domain-driven layout and ESLi
 
 Requires an [Nx](https://nx.dev) workspace with `@nx/angular` (Nx 23).
 
+Example app: [wizardnet972/jira](https://github.com/wizardnet972/jira) — a Jira-style Angular Nx workspace generated with `nx-domainify`.
+
 ## Install
 
 ```sh

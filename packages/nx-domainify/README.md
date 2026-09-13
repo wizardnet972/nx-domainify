@@ -51,4 +51,4 @@ npx nx g nx-domainify:init --skipFormat
 
 Omit `--domain` on `api`, `ui`, and `util` to place the library in `shared`. Libraries follow the `@nx/angular:library` defaults in `nx.json`, including `buildable`.
 
-See the [repository README](https://github.com/wizardnet972/nx-domainify) for full option tables, tag rules, and more examples.
+See the [repository README](https://github.com/wizardnet972/nx-domainify) for full option tables, tag rules, and more examples. Example app: [wizardnet972/jira](https://github.com/wizardnet972/jira).
