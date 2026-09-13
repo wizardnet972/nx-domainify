@@ -13,7 +13,7 @@
     "init": {
       "factory": "./src/generators/init/init",
       "schema": "./src/generators/init/schema.json",
-      "description": "Adds DDD ESLint module-boundary constraints to the workspace."
+      "description": "Adds DDD ESLint module-boundary constraints and an AI skill that instructs agents to use nx-domainify generators."
     },
     "ui": {
       "factory": "./src/generators/ui/ui",

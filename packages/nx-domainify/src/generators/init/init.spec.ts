@@ -48,6 +48,21 @@ describe('initGenerator', () => {
     expect(updated).toContain('"sourceTag": "domain:shared"');
   });
 
+  it('installs the AI skill for Cursor and Claude', async () => {
+    // Arrange
+    tree.write('eslint.config.mjs', ESLINT_CONFIG);
+
+    // Act
+    await initGenerator(tree, { skipFormat: true });
+
+    // Assert
+    const cursorSkill = tree.read('.cursor/skills/nx-domainify-generate/SKILL.md', 'utf-8');
+    const claudeSkill = tree.read('.claude/skills/nx-domainify-generate/SKILL.md', 'utf-8');
+    expect(cursorSkill).toContain('npx nx g nx-domainify:');
+    expect(cursorSkill).toContain('--help');
+    expect(claudeSkill).toBe(cursorSkill);
+  });
+
   it('formats files when skipFormat is not set', async () => {
     // Arrange
     vi.spyOn(devkit, 'formatFiles').mockResolvedValue();

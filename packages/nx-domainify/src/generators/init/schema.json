@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/schema",
   "$id": "Init",
   "title": "Initialize nx-domainify",
-  "description": "Adds DDD ESLint module-boundary constraints to the workspace.",
+  "description": "Adds DDD ESLint module-boundary constraints and an AI skill that instructs agents to use nx-domainify generators.",
   "type": "object",
   "properties": {
     "skipFormat": {

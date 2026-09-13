@@ -1,6 +1,18 @@
 import { formatFiles, Tree } from '@nx/devkit';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { InitGeneratorSchema } from './schema';
 import { updateDepsConstraints } from '../../utils/update-deps-constraints';
+
+const AI_SKILL_PATHS = ['.cursor/skills/nx-domainify-generate/SKILL.md', '.claude/skills/nx-domainify-generate/SKILL.md'];
+
+const installAiSkill = (tree: Tree) => {
+  const skill = readFileSync(join(__dirname, 'files', 'SKILL.md'), 'utf-8');
+
+  for (const path of AI_SKILL_PATHS) {
+    tree.write(path, skill);
+  }
+};
 
 export async function initGenerator(tree: Tree, options: InitGeneratorSchema) {
   const dddRules = [
@@ -13,6 +25,7 @@ export async function initGenerator(tree: Tree, options: InitGeneratorSchema) {
   ];
 
   updateDepsConstraints(tree, () => JSON.stringify(dddRules));
+  installAiSkill(tree);
 
   if (!options.skipFormat) await formatFiles(tree);
 }

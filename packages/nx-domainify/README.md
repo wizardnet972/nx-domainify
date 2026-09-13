@@ -11,6 +11,8 @@ npm install -D nx-domainify
 npx nx g nx-domainify:init
 ```
 
+`init` writes DDD ESLint module-boundary rules and installs an AI skill (`.cursor/skills/nx-domainify-generate` and `.claude/skills/nx-domainify-generate`) so agents use `nx-domainify:*` commands and `--help` when they are unsure.
+
 ## Generators
 
 ```sh
@@ -27,10 +29,13 @@ npx nx g nx-domainify:api gateway
 npx nx g nx-domainify:ui button --domain=booking
 npx nx g nx-domainify:ui button --domain=booking --directory=forms --skipPrefix
 npx nx g nx-domainify:ui button
+npx nx g nx-domainify:ui button --domain=shared --directory=ui --skipPrefix
+npx nx g @nx/angular:component --path=libs/shared/ui/button/src/lib/button --export --no-interactive
 
 npx nx g nx-domainify:util dates --domain=booking
 npx nx g nx-domainify:util dates --domain=booking --directory=time --skipPrefix
 npx nx g nx-domainify:util dates
+npx nx g nx-domainify:util format --domain=shared --directory=util --skipPrefix
 
 npx nx g nx-domainify:init --skipFormat
 ```

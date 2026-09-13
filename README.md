@@ -11,7 +11,7 @@ npm install -D nx-domainify
 npx nx g nx-domainify:init
 ```
 
-`init` writes DDD dependency constraints into your workspace ESLint config (`@nx/enforce-module-boundaries`).
+`init` writes DDD dependency constraints into your workspace ESLint config (`@nx/enforce-module-boundaries`) and installs an AI skill at `.cursor/skills/nx-domainify-generate` and `.claude/skills/nx-domainify-generate`. That skill tells agents to use `nx-domainify:*` commands and to run `--help` when an option is unknown or a generator fails.
 
 Create a domain first, then APIs, features, UI, and utils under it. Omit `--domain` on `api`, `ui`, and `util` to place the library in `shared`. Use `--help` on a generator if you want to see every option. Libraries follow the `@nx/angular:library` defaults in `nx.json`, including `buildable`.
 
@@ -19,7 +19,7 @@ Create a domain first, then APIs, features, UI, and utils under it. Omit `--doma
 
 ### `nx-domainify:init`
 
-Adds DDD ESLint module-boundary constraints to the workspace.
+Adds DDD ESLint module-boundary constraints and an AI skill that instructs agents to use `nx-domainify` generators.
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -101,6 +101,8 @@ Tags: `domain:<name|shared>`, `type:ui`
 | `--directory` | string | no | — | Nested path under the domain folder where the UI library is created. |
 | `--skipPrefix` | boolean | no | `false` | Skip the `ui-` prefix in the project name and folder. |
 
+`ui` creates the library only. It does not add a component. After the library exists, generate one with `@nx/angular:component`.
+
 ```sh
 npx nx g nx-domainify:ui button --domain=booking
 npx nx g nx-domainify:ui card --domain=booking --directory=forms
@@ -108,7 +110,13 @@ npx nx g nx-domainify:ui button --domain=booking --skipPrefix
 npx nx g nx-domainify:ui button --domain=booking --directory=forms --skipPrefix
 npx nx g nx-domainify:ui button
 npx nx g nx-domainify:ui button --directory=kit --skipPrefix
+
+npx nx g nx-domainify:domain shared
+npx nx g nx-domainify:ui button --domain=shared --directory=ui --skipPrefix
+npx nx g @nx/angular:component --path=libs/shared/ui/button/src/lib/button --export --no-interactive
 ```
+
+`--domain=shared --directory=ui --skipPrefix` creates `libs/shared/ui/button` (not `ui-button`).
 
 ### `nx-domainify:util`
 
@@ -130,7 +138,10 @@ npx nx g nx-domainify:util dates --domain=booking --skipPrefix
 npx nx g nx-domainify:util dates --domain=booking --directory=time --skipPrefix
 npx nx g nx-domainify:util dates
 npx nx g nx-domainify:util dates --directory=time --skipPrefix
+npx nx g nx-domainify:util format --domain=shared --directory=util --skipPrefix
 ```
+
+`--domain=shared --directory=util --skipPrefix` creates `libs/shared/util/format` (not `util-format`).
 
 ## Module boundaries
 
