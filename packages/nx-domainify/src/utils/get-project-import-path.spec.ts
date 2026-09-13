@@ -28,7 +28,7 @@ describe('getProjectImportPathOrThrow', () => {
       JSON.stringify({
         compilerOptions: {
           paths: {
-            'booking-domain': ['libs/booking/domain/src/index.ts'],
+            'booking-domain': ['./libs/booking/domain/src/index.ts'],
           },
         },
       })

@@ -23,7 +23,7 @@ export function getProjectImportPathOrThrow(tree: Tree, projectRoot: string, pro
 
 function findImportPathInTsconfig(tree: Tree, projectRoot: string): string | undefined {
   const candidates = ['tsconfig.base.json', 'tsconfig.json'];
-  const normalizedRoot = projectRoot.replace(/\\/g, '/').replace(/\/$/, '');
+  const normalizedRoot = normalizePath(projectRoot);
 
   for (const file of candidates) {
     if (!tree.exists(file)) {
@@ -35,7 +35,7 @@ function findImportPathInTsconfig(tree: Tree, projectRoot: string): string | und
 
     for (const [importPath, mappings] of Object.entries(paths)) {
       const matches = (mappings ?? []).some((mapping) => {
-        const normalized = mapping.replace(/\\/g, '/');
+        const normalized = normalizePath(mapping);
         return normalized === normalizedRoot || normalized.startsWith(`${normalizedRoot}/`);
       });
 
@@ -46,4 +46,8 @@ function findImportPathInTsconfig(tree: Tree, projectRoot: string): string | und
   }
 
   return undefined;
+}
+
+function normalizePath(path: string): string {
+  return path.replace(/\\/g, '/').replace(/^\.?\//, '').replace(/\/$/, '');
 }
