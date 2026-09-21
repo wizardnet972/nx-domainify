@@ -27,7 +27,7 @@ export async function initGenerator(tree: Tree, options: InitGeneratorSchema) {
   updateDepsConstraints(tree, () => JSON.stringify(dddRules));
   installAiSkill(tree);
 
-  if (!options.skipFormat) await formatFiles(tree);
+  if (!options.skipFormat && !options['skip-format']) await formatFiles(tree);
 }
 
 export default initGenerator;

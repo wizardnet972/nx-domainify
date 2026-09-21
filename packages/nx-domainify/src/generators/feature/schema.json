@@ -19,6 +19,12 @@
       "aliases": ["domainName"],
       "description": "Existing domain name, for example booking. The domain library must already exist.",
       "x-prompt": "Which domain should this feature belong to?"
+    },
+    "dryRun": {
+      "type": "boolean",
+      "description": "Preview the changes without updating files. Same as --dry-run.",
+      "default": false,
+      "aliases": ["dry-run"]
     }
   },
   "required": ["directory", "domain"]

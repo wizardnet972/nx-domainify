@@ -17,6 +17,12 @@
     "directory": {
       "type": "string",
       "description": "Optional nested path under the workspace libs directory, for example sales. Creates libs/<directory>/<name>/domain."
+    },
+    "dryRun": {
+      "type": "boolean",
+      "description": "Preview the changes without updating files. Same as --dry-run.",
+      "default": false,
+      "aliases": ["dry-run"]
     }
   },
   "required": ["name"]

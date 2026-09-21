@@ -83,7 +83,7 @@ describe('utilGenerator', () => {
 
   it('falls back to the shared domain and respects skipPrefix', async () => {
     // Act
-    await utilGenerator(tree, { name: 'math', domain: '', directory: '', skipPrefix: true });
+    await utilGenerator(tree, { name: 'math', domain: '', directory: '', 'skip-prefix': true });
 
     // Assert
     const [, schema] = libraryGeneratorMock.mock.calls[0] as [Tree, LibraryGeneratorSchema];

@@ -3,6 +3,7 @@ export interface UiGeneratorSchema {
   domain?: string;
   directory?: string;
   skipPrefix?: boolean;
-
-  [key: string]: string | boolean | undefined;
+  'skip-prefix'?: boolean;
+  dryRun?: boolean;
+  'dry-run'?: boolean;
 }

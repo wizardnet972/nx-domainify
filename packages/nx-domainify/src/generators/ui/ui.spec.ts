@@ -98,12 +98,12 @@ describe('uiGenerator', () => {
     expect(tree.read(joinPathFragments(projectRoot, 'src', 'index.ts'), 'utf-8')).toBe('export {}');
   });
 
-  it('omits the prefix when skipPrefix is true', async () => {
+  it('omits the prefix when skip-prefix is true', async () => {
     // Arrange
     setupDomainProject(tree, 'marketing');
 
     // Act
-    await uiGenerator(tree, { name: 'hero', domain: 'marketing', directory: 'pages', skipPrefix: true });
+    await uiGenerator(tree, { name: 'hero', domain: 'marketing', directory: 'pages', 'skip-prefix': true });
 
     // Assert
     const [, schema] = libraryGeneratorMock.mock.calls[0] as [Tree, LibraryGeneratorSchema];

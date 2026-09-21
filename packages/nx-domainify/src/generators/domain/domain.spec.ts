@@ -117,6 +117,38 @@ describe('domainGenerator', () => {
     expect(updated).toContain('"onlyDependOnLibsWithTags":["domain:support","domain:shared"]');
   });
 
+  it('appends a domain-specific constraint in .eslintrc.json', async () => {
+    // Arrange
+    tree.delete('eslint.config.mjs');
+    tree.write(
+      '.eslintrc.json',
+      JSON.stringify({
+        overrides: [
+          {
+            files: ['*.ts'],
+            rules: {
+              '@nx/enforce-module-boundaries': [
+                'error',
+                {
+                  depConstraints: [{ sourceTag: '*', onlyDependOnLibsWithTags: ['*'] }],
+                },
+              ],
+            },
+          },
+        ],
+      })
+    );
+    vi.spyOn(devkit, 'formatFiles').mockResolvedValue();
+
+    // Act
+    await domainGenerator(tree, { name: 'orders' });
+
+    // Assert
+    const updated = tree.read('.eslintrc.json', 'utf-8')?.replace(/\s+/g, '');
+    expect(updated).toContain('"sourceTag":"domain:orders"');
+    expect(updated).toContain('"onlyDependOnLibsWithTags":["domain:orders","domain:shared"]');
+  });
+
   it('formats files when generation completes', async () => {
     // Arrange
     const formatSpy = vi.spyOn(devkit, 'formatFiles').mockResolvedValue();

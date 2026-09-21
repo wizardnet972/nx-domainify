@@ -7,7 +7,7 @@ const pluginRoot = join(dirname(fileURLToPath(import.meta.url)), '../..');
 type JsonSchema = {
   description?: string;
   title?: string;
-  properties?: Record<string, { description?: string }>;
+  properties?: Record<string, { description?: string; aliases?: string[] }>;
 };
 
 type GeneratorsJson = {
@@ -57,5 +57,16 @@ describe('generator --help metadata', () => {
     // Assert
     expect(directoryDescription.toLowerCase()).not.toContain('ui library');
     expect(directoryDescription.toLowerCase()).toContain('api');
+  });
+
+  it.each(['api', 'ui', 'util'] as const)('%s skipPrefix accepts skip-prefix', (generator) => {
+    // Arrange
+    const schema = JSON.parse(readFileSync(join(pluginRoot, `src/generators/${generator}/schema.json`), 'utf-8')) as JsonSchema;
+
+    // Act
+    const aliases = schema.properties?.skipPrefix?.aliases ?? [];
+
+    // Assert
+    expect(aliases).toContain('skip-prefix');
   });
 });

@@ -75,6 +75,36 @@ describe('initGenerator', () => {
     expect(devkit.formatFiles).toHaveBeenCalledWith(tree);
   });
 
+  it('updates depConstraints in .eslintrc.json', async () => {
+    // Arrange
+    tree.write(
+      '.eslintrc.json',
+      JSON.stringify({
+        overrides: [
+          {
+            files: ['*.ts'],
+            rules: {
+              '@nx/enforce-module-boundaries': [
+                'error',
+                {
+                  depConstraints: [{ sourceTag: '*', onlyDependOnLibsWithTags: ['*'] }],
+                },
+              ],
+            },
+          },
+        ],
+      })
+    );
+
+    // Act
+    await initGenerator(tree, { skipFormat: true });
+
+    // Assert
+    const updated = tree.read('.eslintrc.json', 'utf-8');
+    expect(updated).not.toContain('"sourceTag": "*"');
+    expect(updated).toContain('"sourceTag": "domain:shared"');
+  });
+
   it('skips formatting when skipFormat is true', async () => {
     // Arrange
     vi.spyOn(devkit, 'formatFiles').mockResolvedValue();

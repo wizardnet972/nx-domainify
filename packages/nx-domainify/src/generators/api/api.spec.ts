@@ -86,7 +86,7 @@ describe('apiGenerator', () => {
     setupDomainProject(tree, 'support');
 
     // Act
-    await apiGenerator(tree, { name: 'chat', domain: 'support', directory: 'help/desk', skipPrefix: true });
+    await apiGenerator(tree, { name: 'chat', domain: 'support', directory: 'help/desk', 'skip-prefix': true });
 
     // Assert
     const [, schema] = libraryGeneratorMock.mock.calls[0] as [Tree, LibraryGeneratorSchema];

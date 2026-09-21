@@ -2,7 +2,7 @@
 
 Nx plugin that scaffolds Angular libraries using a domain-driven layout and ESLint module-boundary tags.
 
-Requires an Nx workspace with `@nx/angular` (Nx 23).
+Requires an Nx workspace with `@nx/angular` (Nx 20, 21, 22, or 23).
 
 ## Install
 

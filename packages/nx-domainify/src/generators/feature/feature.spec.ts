@@ -165,6 +165,37 @@ describe('featureGenerator', () => {
     expect(component).not.toContain('@undefined/');
   });
 
+  it('wires a generated *.component.ts file used by older Angular component types', async () => {
+    // Arrange
+    setupDomainProject(tree, 'inventory');
+    vi.mocked(angularGenerators.componentGenerator).mockImplementation(async (tree, options: any) => {
+      const className = names(options.name).className;
+      const filePath = `${options.path}.component.ts`;
+
+      tree.write(
+        filePath,
+        `import { Component } from '@angular/core';
+
+@Component({
+  selector: '${options.selector}',
+  standalone: true,
+})
+export class ${className}Component {}
+`
+      );
+    });
+
+    // Act
+    await featureGenerator(tree, { domain: 'inventory', directory: 'list' });
+
+    // Assert
+    const component = tree.read('libs/inventory/feature-list/src/lib/list.component.ts', 'utf-8');
+    const index = tree.read('libs/inventory/feature-list/src/index.ts', 'utf-8');
+    expect(component).toContain('providers: [ListFacade]');
+    expect(component).toContain('facade = inject(ListFacade)');
+    expect(index?.replace(/"/g, "'")).toContain("export * from './lib/list.component'");
+  });
+
   it('throws when the domain project has no import path', async () => {
     // Arrange
     addProjectConfiguration(tree, 'booking-domain', {

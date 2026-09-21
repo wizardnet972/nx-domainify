@@ -25,8 +25,15 @@
     },
     "skipPrefix": {
       "type": "boolean",
-      "description": "Skip the api- prefix in the project name and folder.",
-      "default": false
+      "description": "Skip the api- prefix in the project name and folder. Same as --skip-prefix.",
+      "default": false,
+      "aliases": ["skip-prefix"]
+    },
+    "dryRun": {
+      "type": "boolean",
+      "description": "Preview the changes without updating files. Same as --dry-run.",
+      "default": false,
+      "aliases": ["dry-run"]
     }
   },
   "required": ["name"]

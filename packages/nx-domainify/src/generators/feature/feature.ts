@@ -52,7 +52,8 @@ export async function featureGenerator(tree: Tree, options: FeatureGeneratorSche
     selector: libraryName,
   });
 
-  tree.write(joinPathFragments(projectRoot, 'src', 'index.ts'), `export * from './lib/${featureFileName}'`);
+  const componentFilePath = resolveComponentFilePath(tree, projectRoot, featureFileName);
+  tree.write(joinPathFragments(projectRoot, 'src', 'index.ts'), `export * from '${toSrcExportSpecifier(projectRoot, componentFilePath)}'`);
 
   tree.write(
     joinPathFragments(domainProjectRoot, 'src', 'lib', 'application', `${featureFileName}.facade.ts`),
@@ -74,7 +75,6 @@ export async function featureGenerator(tree: Tree, options: FeatureGeneratorSche
 
   flushIndexSourceFile();
 
-  const componentFilePath = joinPathFragments(projectRoot, 'src', 'lib', `${featureFileName}.ts`);
   const { sourceFile: componentSourceFile, flush: flushComponentSourceFile } = createSourceFile(tree, componentFilePath);
 
   componentSourceFile.addImportDeclaration({
@@ -113,6 +113,27 @@ export async function featureGenerator(tree: Tree, options: FeatureGeneratorSche
   return () => {
     installPackagesTask(tree);
   };
+}
+
+function resolveComponentFilePath(tree: Tree, projectRoot: string, featureFileName: string) {
+  const libRoot = joinPathFragments(projectRoot, 'src', 'lib');
+  const candidates = [
+    joinPathFragments(libRoot, `${featureFileName}.ts`),
+    joinPathFragments(libRoot, `${featureFileName}.component.ts`),
+    joinPathFragments(libRoot, featureFileName, `${featureFileName}.ts`),
+    joinPathFragments(libRoot, featureFileName, `${featureFileName}.component.ts`),
+  ];
+  const found = candidates.find((path) => tree.exists(path));
+  if (!found) {
+    throw new Error(`Could not find the generated feature component at ${libRoot}.`);
+  }
+  return found;
+}
+
+function toSrcExportSpecifier(projectRoot: string, filePath: string) {
+  const srcRoot = joinPathFragments(projectRoot, 'src');
+  const relative = filePath.startsWith(`${srcRoot}/`) ? filePath.slice(srcRoot.length + 1) : filePath;
+  return `./${relative.replace(/\.ts$/, '')}`;
 }
 
 export default featureGenerator;

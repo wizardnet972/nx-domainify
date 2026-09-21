@@ -7,8 +7,15 @@
   "properties": {
     "skipFormat": {
       "type": "boolean",
-      "description": "Skip formatting files after the generator runs.",
-      "default": false
+      "description": "Skip formatting files after the generator runs. Same as --skip-format.",
+      "default": false,
+      "aliases": ["skip-format"]
+    },
+    "dryRun": {
+      "type": "boolean",
+      "description": "Preview the changes without updating files. Same as --dry-run.",
+      "default": false,
+      "aliases": ["dry-run"]
     }
   }
 }

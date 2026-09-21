@@ -3,4 +3,7 @@ export interface UtilGeneratorSchema {
   domain?: string;
   directory?: string;
   skipPrefix?: boolean;
+  'skip-prefix'?: boolean;
+  dryRun?: boolean;
+  'dry-run'?: boolean;
 }

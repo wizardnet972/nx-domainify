@@ -1,6 +1,7 @@
 import { formatFiles, getWorkspaceLayout, installPackagesTask, joinPathFragments, names, readNxJson, Tree } from '@nx/devkit';
 import { DomainGeneratorSchema } from './schema';
 import { updateDepsConstraints } from '../../utils/update-deps-constraints';
+import { withoutGeneratorFlags } from '../../utils/generator-options';
 import { parse } from 'json5';
 
 const normalizeOptions = (tree: Tree, options: DomainGeneratorSchema) => {
@@ -17,7 +18,7 @@ export async function domainGenerator(tree: Tree, options: DomainGeneratorSchema
   const { libraryGenerator } = await import('@nx/angular/generators');
   await libraryGenerator(tree, {
     ...(readNxJson(tree)?.generators?.['@nx/angular:library'] || {}),
-    ...options,
+    ...withoutGeneratorFlags(options),
     name: `${name}-${suffix}`,
     directory,
     prefix: `${name}-${suffix}`,

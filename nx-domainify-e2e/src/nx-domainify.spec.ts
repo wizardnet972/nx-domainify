@@ -1,18 +1,25 @@
 import { execSync, ExecSyncOptions } from 'node:child_process';
-import { appendFileSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-const REPO_ROOT = join(fileURLToPath(new URL('.', import.meta.url)), '../..');
 const WORKSPACE_TIMEOUT_MS = 600_000;
 
-describe('nx-domainify', () => {
+const WORKSPACES = [
+  { nxVersion: '20.8.4', label: 'Nx 20' },
+  { nxVersion: '21.6.11', label: 'Nx 21' },
+  { nxVersion: '22.7.12', label: 'Nx 22' },
+  { nxVersion: '23.2.1', label: 'Nx 23' },
+] as const;
+
+describe.each(WORKSPACES)('nx-domainify on $label', ({ nxVersion }) => {
   let projectDirectory: string;
   let keepWorkspace = false;
+  const projectName = `test-project-${nxVersion.split('.')[0]}`;
 
   beforeAll(() => {
-    projectDirectory = createTestProject();
-    run(`pnpm add -Dw --config.frozen-lockfile=false nx-domainify@e2e`, projectDirectory);
+    projectDirectory = createTestProject(nxVersion, projectName);
+    run(`pnpm add -D --config.frozen-lockfile=false nx-domainify@e2e`, projectDirectory);
   }, WORKSPACE_TIMEOUT_MS);
 
   afterAll(() => {
@@ -24,15 +31,17 @@ describe('nx-domainify', () => {
     }
   });
 
-  it('should be installed', () => {
+  it('should be installed against the workspace @nx/angular', () => {
     run('pnpm ls --depth 100 nx-domainify', projectDirectory);
+    expect(packageMajor(join(projectDirectory, 'node_modules/@nx/angular/package.json'))).toBe(nxVersion.split('.')[0]);
+    expect(existsSync(join(projectDirectory, 'node_modules/nx-domainify/node_modules/@nx/angular'))).toBe(false);
   });
 
   it(
     'should init, generate isolated domains, and enforce module boundaries',
     () => {
       try {
-        generateIsolatedDomains();
+        generateIsolatedDomains(projectDirectory);
       } catch (error) {
         keepWorkspace = true;
         throw error;
@@ -40,43 +49,41 @@ describe('nx-domainify', () => {
     },
     WORKSPACE_TIMEOUT_MS
   );
-
-  function generateIsolatedDomains() {
-      run('pnpm exec nx g nx-domainify:init --no-interactive', projectDirectory);
-      run('pnpm exec nx g nx-domainify:domain booking --directory=libs --no-interactive', projectDirectory);
-      run('pnpm exec nx g nx-domainify:feature list --domain=booking --no-interactive', projectDirectory);
-      run('pnpm exec nx g nx-domainify:domain orders --no-interactive', projectDirectory);
-      run('pnpm exec nx g nx-domainify:feature list --domain=orders --no-interactive', projectDirectory);
-
-      const bookingDomain = nxProjectName(projectDirectory, 'libs/booking/domain');
-      const bookingFeature = nxProjectName(projectDirectory, 'libs/booking/feature-list');
-      const ordersDomain = nxProjectName(projectDirectory, 'libs/orders/domain');
-      const ordersFeature = nxProjectName(projectDirectory, 'libs/orders/feature-list');
-
-      run(
-        `pnpm exec nx run-many -t lint --projects=${shellJoin([bookingDomain, bookingFeature, ordersDomain, ordersFeature])}`,
-        projectDirectory
-      );
-      runBuildIfPresent(projectDirectory, [bookingDomain, bookingFeature]);
-
-      const bookingImportPath = projectImportPath(projectDirectory, 'libs/booking/domain');
-      const featureFile = join(projectDirectory, 'libs/orders/feature-list/src/lib/list.ts');
-      appendFileSync(featureFile, `\nimport '${bookingImportPath}';\n`);
-
-      let lintOutput = '';
-      try {
-        run(`pnpm exec nx lint ${shellQuote(ordersFeature)}`, projectDirectory);
-      } catch (error) {
-        lintOutput = commandOutput(error);
-      }
-
-      expect(lintOutput).toContain('enforce-module-boundaries');
-  }
 });
 
-function createTestProject() {
-  const projectName = 'test-project';
-  const projectDirectory = join(REPO_ROOT, 'tmp', projectName);
+function generateIsolatedDomains(projectDirectory: string) {
+  run('pnpm exec nx g nx-domainify:init --no-interactive', projectDirectory);
+  run('pnpm exec nx g nx-domainify:domain booking --directory=libs --no-interactive', projectDirectory);
+  run('pnpm exec nx g nx-domainify:feature list --domain=booking --no-interactive', projectDirectory);
+  run('pnpm exec nx g nx-domainify:domain orders --no-interactive', projectDirectory);
+  run('pnpm exec nx g nx-domainify:feature list --domain=orders --no-interactive', projectDirectory);
+
+  const bookingDomain = nxProjectName(projectDirectory, 'libs/booking/domain');
+  const bookingFeature = nxProjectName(projectDirectory, 'libs/booking/feature-list');
+  const ordersDomain = nxProjectName(projectDirectory, 'libs/orders/domain');
+  const ordersFeature = nxProjectName(projectDirectory, 'libs/orders/feature-list');
+
+  run(
+    `pnpm exec nx run-many -t lint --projects=${shellJoin([bookingDomain, bookingFeature, ordersDomain, ordersFeature])}`,
+    projectDirectory
+  );
+  runBuildIfPresent(projectDirectory, [bookingDomain, bookingFeature]);
+
+  const bookingImportPath = projectImportPath(projectDirectory, 'libs/booking/domain');
+  appendFileSync(featureSourceFile(projectDirectory, 'libs/orders/feature-list', 'list'), `\nimport '${bookingImportPath}';\n`);
+
+  let lintOutput = '';
+  try {
+    run(`pnpm exec nx lint ${shellQuote(ordersFeature)}`, projectDirectory);
+  } catch (error) {
+    lintOutput = commandOutput(error);
+  }
+
+  expect(lintOutput).toContain('enforce-module-boundaries');
+}
+
+function createTestProject(nxVersion: string, projectName: string) {
+  const projectDirectory = join(tmpdir(), 'nx-domainify-e2e', projectName);
 
   rmSync(projectDirectory, {
     recursive: true,
@@ -86,28 +93,48 @@ function createTestProject() {
     recursive: true,
   });
 
-  run(
-    [
-      'pnpm dlx create-nx-workspace@23.2.1',
-      projectName,
-      '--preset=angular-monorepo',
-      '--appName=demo',
-      '--style=css',
-      '--bundler=esbuild',
-      '--ssr=false',
-      '--e2eTestRunner=none',
-      '--unitTestRunner=none',
-      '--linter=eslint',
-      '--formatter=prettier',
-      '--aiAgents=none',
-      '--packageManager=pnpm',
-      '--nxCloud=skip',
-      '--no-interactive',
-    ].join(' '),
-    dirname(projectDirectory)
-  );
+  const major = Number(nxVersion.split('.')[0]);
+  const flags = [
+    `pnpm dlx create-nx-workspace@${nxVersion}`,
+    projectName,
+    '--preset=angular-monorepo',
+    '--appName=demo',
+    '--style=css',
+    '--bundler=esbuild',
+    '--ssr=false',
+    '--e2eTestRunner=none',
+    '--unitTestRunner=none',
+    '--formatter=prettier',
+    '--packageManager=pnpm',
+    '--nxCloud=skip',
+    '--no-interactive',
+  ];
+
+  if (major >= 23) {
+    flags.push('--linter=eslint', '--aiAgents=none');
+  }
+
+  run(flags.join(' '), dirname(projectDirectory));
+  alignAngularLibraryDefaults(projectDirectory);
 
   return projectDirectory;
+}
+
+function alignAngularLibraryDefaults(projectDirectory: string) {
+  const nxJsonPath = join(projectDirectory, 'nx.json');
+  const nxJson = JSON.parse(readFileSync(nxJsonPath, 'utf-8')) as {
+    generators?: Record<string, Record<string, unknown>>;
+  };
+
+  nxJson.generators = {
+    ...(nxJson.generators ?? {}),
+    '@nx/angular:library': {
+      ...(nxJson.generators?.['@nx/angular:library'] ?? {}),
+      unitTestRunner: 'none',
+    },
+  };
+
+  writeFileSync(nxJsonPath, `${JSON.stringify(nxJson, null, 2)}\n`);
 }
 
 function run(command: string, cwd: string) {
@@ -272,6 +299,25 @@ function projectImportPath(workspace: string, projectRoot: string) {
   }
 
   throw new Error(`Could not determine the import path for ${projectRoot}`);
+}
+
+function featureSourceFile(workspace: string, projectRoot: string, featureName: string) {
+  const candidates = [
+    join(workspace, projectRoot, 'src/lib', `${featureName}.ts`),
+    join(workspace, projectRoot, 'src/lib', `${featureName}.component.ts`),
+    join(workspace, projectRoot, 'src/lib', featureName, `${featureName}.ts`),
+    join(workspace, projectRoot, 'src/lib', featureName, `${featureName}.component.ts`),
+  ];
+  const found = candidates.find((candidate) => existsSync(candidate));
+  if (!found) {
+    throw new Error(`Could not find the generated feature file for ${projectRoot}`);
+  }
+  return found;
+}
+
+function packageMajor(manifestPath: string) {
+  const { version } = JSON.parse(readFileSync(manifestPath, 'utf-8')) as { version?: string };
+  return version?.split('.')[0];
 }
 
 function commandOutput(error: unknown) {
