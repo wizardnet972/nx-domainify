@@ -47,6 +47,12 @@
         "ciTargetName": "test-ci",
         "testMode": "run"
       }
+    },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "eslint:lint"
+      }
     }
   ],
   "analytics": false

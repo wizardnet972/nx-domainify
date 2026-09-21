@@ -1,0 +1,19 @@
+{
+  "name": "nx-domainify-e2e",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "nx-domainify-e2e/src",
+  "implicitDependencies": ["nx-domainify"],
+  "targets": {
+    "e2e": {
+      "executor": "@nx/vitest:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "dependsOn": ["^build"],
+      "options": {
+        "reportsDirectory": "coverage/nx-domainify-e2e",
+        "maxWorkers": 1,
+        "isolate": false
+      }
+    }
+  }
+}
