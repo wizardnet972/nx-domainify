@@ -1,3 +1,13 @@
+## 2.2.0 (2026-09-21)
+
+### 🚀 Features
+
+- support Nx 20-23 and kebab-case generator flags ([0d8b902](https://github.com/wizardnet972/nx-domainify/commit/0d8b902))
+
+### ❤️ Thank You
+
+- Shlomi Levi @wizardnet972
+
 ## 2.1.1 (2026-09-21)
 
 This was a version bump only, there were no code changes.

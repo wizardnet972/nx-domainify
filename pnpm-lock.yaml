@@ -97,10 +97,10 @@ importers:
   packages/nx-domainify:
     dependencies:
       '@nx/angular':
-        specifier: ^23.2.1
+        specifier: '>=20.0.0 <24.0.0'
         version: 23.2.1(@angular-devkit/core@22.1.8)(@angular-devkit/schematics@22.1.8)(@babel/traverse@7.29.8)(@nx/jest@23.2.1(ef5c5899ac321eadaabc458b8e02d6f8))(@nx/vite@23.2.1(0989068c556f5bf1c0996ff3f3c8e01f))(@schematics/angular@22.1.8)(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(typescript@6.0.3))(@swc/cli@0.8.1(@swc/core@1.15.47(@swc/helpers@0.5.23)))(@swc/core@1.15.47(@swc/helpers@0.5.23))(@zkochan/js-yaml@0.0.7)(eslint@9.39.5)(nx@23.2.1(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(typescript@6.0.3))(@swc/core@1.15.47(@swc/helpers@0.5.23)))(rxjs@7.8.2)(typescript@6.0.3)(verdaccio@6.10.3(typanion@3.14.0))
       '@nx/devkit':
-        specifier: ^23.2.1
+        specifier: '>=20.0.0 <24.0.0'
         version: 23.2.1(nx@23.2.1(@swc-node/register@1.11.1(@swc/core@1.15.47(@swc/helpers@0.5.23))(@swc/types@0.1.28)(typescript@6.0.3))(@swc/core@1.15.47(@swc/helpers@0.5.23)))
       '@phenomnomnominal/tsquery':
         specifier: ^6.1.3
