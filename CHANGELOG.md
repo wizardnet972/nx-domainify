@@ -1,3 +1,13 @@
+## 2.3.0 (2026-10-25)
+
+### 🚀 Features
+
+- write module-boundary constraints to Oxlint when the workspace uses it ([#1](https://github.com/wizardnet972/nx-domainify/pull/1))
+
+### ❤️ Thank You
+
+- Shlomi Levi @wizardnet972
+
 ## 2.2.0 (2026-09-21)
 
 ### 🚀 Features
