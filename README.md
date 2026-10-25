@@ -1,6 +1,6 @@
 # nx-domainify
 
-Nx plugin that scaffolds Angular libraries using a domain-driven layout and ESLint module-boundary tags.
+Nx plugin that scaffolds Angular libraries using a domain-driven layout and ESLint or Oxlint module-boundary tags.
 
 Requires an [Nx](https://nx.dev) workspace with `@nx/angular` (Nx 20, 21, 22, or 23).
 
@@ -13,7 +13,9 @@ npm install -D nx-domainify
 npx nx g nx-domainify:init
 ```
 
-`init` writes DDD dependency constraints into your workspace ESLint config (`@nx/enforce-module-boundaries`) and installs an AI skill at `.cursor/skills/nx-domainify-generate` and `.claude/skills/nx-domainify-generate`. That skill tells agents to use `nx-domainify:*` commands and to run `--help` when an option is unknown or a generator fails.
+`init` writes DDD dependency constraints into the workspace module-boundary rule and installs an AI skill at `.cursor/skills/nx-domainify-generate` and `.claude/skills/nx-domainify-generate`. That skill tells agents to use `nx-domainify:*` commands and to run `--help` when an option is unknown or a generator fails.
+
+The generator follows one linter. When an Oxlint config exists (`.oxlintrc.json`, `.oxlintrc.jsonc`, `oxlint.config.ts`, or `oxlint.config.mts`), that config is updated and the ESLint config is left alone. With no Oxlint config, `@nx/enforce-module-boundaries` in the root ESLint config is updated. A root Oxlint JSON config that does not define the rule yet gets `@nx/oxlint/boundaries-plugin` and `@nx/enforce-module-boundaries`. A config that already uses `boundaries/enforce-module-boundaries` keeps that rule; only its `depConstraints` change.
 
 Create a domain first, then APIs, features, UI, and utils under it. Omit `--domain` on `api`, `ui`, and `util` to place the library in `shared`. Use `--help` on a generator if you want to see every option. Libraries follow the `@nx/angular:library` defaults in `nx.json`, including `buildable`.
 
@@ -21,7 +23,7 @@ Create a domain first, then APIs, features, UI, and utils under it. Omit `--doma
 
 ### `nx-domainify:init`
 
-Adds DDD ESLint module-boundary constraints and an AI skill that instructs agents to use `nx-domainify` generators.
+Adds DDD module-boundary constraints for the workspace linter (Oxlint when present, otherwise ESLint) and an AI skill that instructs agents to use `nx-domainify` generators.
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |

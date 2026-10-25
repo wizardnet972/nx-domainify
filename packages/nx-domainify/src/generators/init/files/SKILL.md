@@ -32,7 +32,7 @@ Re-run `--help` after an unexpected error. Trust the live help over memory.
 
 ## Order
 
-1. `nx-domainify:init` once per workspace (writes ESLint `depConstraints` and this skill).
+1. `nx-domainify:init` once per workspace (writes ESLint or Oxlint `depConstraints` and this skill).
 2. `nx-domainify:domain` before any feature/api/ui/util that uses `--domain`.
 3. Then feature, api, ui, util.
 
