@@ -149,6 +149,78 @@ describe('domainGenerator', () => {
     expect(updated).toContain('"onlyDependOnLibsWithTags":["domain:orders","domain:shared"]');
   });
 
+  it('appends a domain-specific constraint in .oxlintrc.json', async () => {
+    // Arrange
+    tree.delete('eslint.config.mjs');
+    tree.write(
+      '.oxlintrc.json',
+      JSON.stringify({
+        jsPlugins: ['./tools/oxlint/boundaries.mjs'],
+        rules: {
+          'boundaries/enforce-module-boundaries': [
+            'error',
+            {
+              enforceBuildableLibDependency: true,
+              depConstraints: [{ sourceTag: 'domain:shared', onlyDependOnLibsWithTags: ['domain:shared'] }],
+            },
+          ],
+        },
+      })
+    );
+    vi.spyOn(devkit, 'formatFiles').mockResolvedValue();
+
+    // Act
+    await domainGenerator(tree, { name: 'orders' });
+
+    // Assert
+    const updated = JSON.parse(tree.read('.oxlintrc.json', 'utf-8') ?? '{}');
+    const constraints = updated.rules['boundaries/enforce-module-boundaries'][1].depConstraints;
+    expect(constraints[0]).toEqual({ sourceTag: 'domain:orders', onlyDependOnLibsWithTags: ['domain:orders', 'domain:shared'] });
+    expect(constraints[1]).toEqual({ sourceTag: 'domain:shared', onlyDependOnLibsWithTags: ['domain:shared'] });
+    expect(updated.jsPlugins).toEqual(['./tools/oxlint/boundaries.mjs']);
+    expect(updated.rules['@nx/enforce-module-boundaries']).toBeUndefined();
+  });
+
+  it('appends the domain constraint to Oxlint and leaves ESLint unchanged', async () => {
+    // Arrange
+    const eslintBefore = tree.read('eslint.config.mjs', 'utf-8');
+    tree.write(
+      '.oxlintrc.json',
+      JSON.stringify({
+        jsPlugins: ['@nx/oxlint/boundaries-plugin'],
+        rules: {
+          '@nx/enforce-module-boundaries': [
+            'error',
+            { depConstraints: [{ sourceTag: 'domain:shared', onlyDependOnLibsWithTags: ['domain:shared'] }] },
+          ],
+        },
+      })
+    );
+    vi.spyOn(devkit, 'formatFiles').mockResolvedValue();
+
+    // Act
+    await domainGenerator(tree, { name: 'billing' });
+
+    // Assert
+    expect(tree.read('eslint.config.mjs', 'utf-8')).toBe(eslintBefore);
+    const oxlint = JSON.parse(tree.read('.oxlintrc.json', 'utf-8') ?? '{}');
+    expect(oxlint.rules['@nx/enforce-module-boundaries'][1].depConstraints[0].sourceTag).toBe('domain:billing');
+  });
+
+  it('leaves an Oxlint config unchanged when it has no boundary rule', async () => {
+    // Arrange
+    tree.delete('eslint.config.mjs');
+    const source = `${JSON.stringify({ rules: { 'no-console': 'error' } }, null, 2)}\n`;
+    tree.write('.oxlintrc.json', source);
+    vi.spyOn(devkit, 'formatFiles').mockResolvedValue();
+
+    // Act
+    await domainGenerator(tree, { name: 'orders' });
+
+    // Assert
+    expect(tree.read('.oxlintrc.json', 'utf-8')).toBe(source);
+  });
+
   it('formats files when generation completes', async () => {
     // Arrange
     const formatSpy = vi.spyOn(devkit, 'formatFiles').mockResolvedValue();

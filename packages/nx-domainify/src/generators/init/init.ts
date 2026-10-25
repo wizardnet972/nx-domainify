@@ -24,7 +24,7 @@ export async function initGenerator(tree: Tree, options: InitGeneratorSchema) {
     { sourceTag: 'domain:shared', onlyDependOnLibsWithTags: ['domain:shared'] },
   ];
 
-  updateDepsConstraints(tree, () => JSON.stringify(dddRules));
+  updateDepsConstraints(tree, () => JSON.stringify(dddRules), { ensureOxlintRule: true });
   installAiSkill(tree);
 
   if (!options.skipFormat && !options['skip-format']) await formatFiles(tree);

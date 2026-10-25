@@ -1,6 +1,6 @@
 # nx-domainify
 
-Nx plugin that scaffolds Angular libraries using a domain-driven layout and ESLint module-boundary tags.
+Nx plugin that scaffolds Angular libraries using a domain-driven layout and ESLint or Oxlint module-boundary tags.
 
 Requires an Nx workspace with `@nx/angular` (Nx 20, 21, 22, or 23).
 
@@ -11,7 +11,7 @@ npm install -D nx-domainify
 npx nx g nx-domainify:init
 ```
 
-`init` writes DDD ESLint module-boundary rules and installs an AI skill (`.cursor/skills/nx-domainify-generate` and `.claude/skills/nx-domainify-generate`) so agents use `nx-domainify:*` commands and `--help` when they are unsure.
+`init` writes DDD module-boundary constraints into the root Oxlint config when the workspace has one, and into the ESLint config otherwise. It also installs an AI skill (`.cursor/skills/nx-domainify-generate` and `.claude/skills/nx-domainify-generate`) so agents use `nx-domainify:*` commands and `--help` when they are unsure. A new Nx Oxlint workspace gets `@nx/oxlint/boundaries-plugin`. An existing `boundaries/enforce-module-boundaries` rule keeps its name.
 
 ## Generators
 
