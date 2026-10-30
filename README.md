@@ -13,12 +13,6 @@ npm install -D nx-domainify
 npx nx g nx-domainify:init
 ```
 
-`init` writes DDD dependency constraints into the workspace module-boundary rule and installs an AI skill at `.cursor/skills/nx-domainify-generate` and `.claude/skills/nx-domainify-generate`. That skill tells agents to use `nx-domainify:*` commands and to run `--help` when an option is unknown or a generator fails.
-
-The generator follows one linter. When an Oxlint config exists (`.oxlintrc.json`, `.oxlintrc.jsonc`, `oxlint.config.ts`, or `oxlint.config.mts`), that config is updated and the ESLint config is left alone. With no Oxlint config, `@nx/enforce-module-boundaries` in the root ESLint config is updated. A root Oxlint JSON config that does not define the rule yet gets `@nx/oxlint/boundaries-plugin` and `@nx/enforce-module-boundaries`. A config that already uses `boundaries/enforce-module-boundaries` keeps that rule; only its `depConstraints` change.
-
-Create a domain first, then APIs, features, UI, and utils under it. Omit `--domain` on `api`, `ui`, and `util` to place the library in `shared`. Use `--help` on a generator if you want to see every option. Libraries follow the `@nx/angular:library` defaults in `nx.json`, including `buildable`.
-
 ## Generators
 
 ### `nx-domainify:init`
@@ -146,19 +140,6 @@ npx nx g nx-domainify:util format --domain=shared --directory=util --skipPrefix
 ```
 
 `--domain=shared --directory=util --skipPrefix` creates `libs/shared/util/format` (not `util-format`).
-
-## Module boundaries
-
-`init` encodes this dependency direction:
-
-- `type:app` → api, feature, ui, domain-logic, util
-- `type:api` / `type:feature` → ui, domain-logic, util
-- `type:ui` → domain-logic, util
-- `type:domain-logic` → util
-- `domain:shared` → `domain:shared` only
-- each domain may also depend on itself and `domain:shared`
-
-Creating a domain also appends a constraint so `domain:<name>` may only depend on `domain:<name>` and `domain:shared`.
 
 ## Develop this repo
 

@@ -20,7 +20,7 @@ const OXLINT_JSON_CANDIDATES = ['.oxlintrc.json', '.oxlintrc.jsonc'];
 
 const OXLINT_CONFIGS = [...OXLINT_SCRIPT_CANDIDATES, ...OXLINT_JSON_CANDIDATES];
 
-const BOUNDARY_RULES = ['@nx/enforce-module-boundaries', 'boundaries/enforce-module-boundaries'];
+const BOUNDARY_RULE = '@nx/enforce-module-boundaries';
 
 const OXLINT_BOUNDARIES_PLUGIN = '@nx/oxlint/boundaries-plugin';
 
@@ -54,14 +54,10 @@ function updateScriptConfig(tree: Tree, configPath: string, stringTransformer: S
   const source = tree.read(configPath, 'utf-8');
   if (!source) return;
 
-  const updated = BOUNDARY_RULES.reduce(
-    (current, ruleName) =>
-      tsquery.replace(
-        current,
-        `PropertyAssignment:has(StringLiteral[value="${ruleName}"]) ArrayLiteralExpression PropertyAssignment:has(Identifier[name="depConstraints"]) > ArrayLiteralExpression`,
-        stringTransformer
-      ),
-    source
+  const updated = tsquery.replace(
+    source,
+    `PropertyAssignment:has(StringLiteral[value="${BOUNDARY_RULE}"]) ArrayLiteralExpression PropertyAssignment:has(Identifier[name="depConstraints"]) > ArrayLiteralExpression`,
+    stringTransformer
   );
 
   if (updated !== source) {
@@ -140,7 +136,7 @@ function replaceConstraintArrays(source: string, constraints: unknown[]) {
 
 function constraintSpans(source: string) {
   const spans: { start: number; end: number }[] = [];
-  const ruleName = /["'](?:@nx\/enforce-module-boundaries|boundaries\/enforce-module-boundaries)["']/g;
+  const ruleName = /["']@nx\/enforce-module-boundaries["']/g;
 
   for (const match of source.matchAll(ruleName)) {
     const rule = arrayAfter(source, (match.index ?? 0) + match[0].length);
@@ -227,7 +223,7 @@ function formatJson(value: unknown, indent: string) {
 }
 
 function boundaryDepConstraints(key: string, value: unknown) {
-  if (!BOUNDARY_RULES.includes(key) || !Array.isArray(value)) return;
+  if (key !== BOUNDARY_RULE || !Array.isArray(value)) return;
 
   const options = value[1];
   if (!options || typeof options !== 'object' || Array.isArray(options)) return;
@@ -243,7 +239,6 @@ function withDepConstraints(rule: unknown[], depConstraints: unknown) {
 
 function ensureOxlintBoundaries(config: Record<string, unknown>, depConstraints: unknown) {
   if (fillMissingDepConstraints(config, depConstraints)) return true;
-  if (hasCustomBoundariesPlugin(config.jsPlugins)) return false;
 
   insertJsPlugin(config, OXLINT_BOUNDARIES_PLUGIN);
   const rules = recordValue(config, 'rules');
@@ -271,7 +266,7 @@ function fillMissingDepConstraints(value: unknown, depConstraints: unknown) {
 
     const record = node as Record<string, unknown>;
     for (const [key, nested] of Object.entries(record)) {
-      if (BOUNDARY_RULES.includes(key)) {
+      if (key === BOUNDARY_RULE) {
         found = true;
         if (Array.isArray(nested)) {
           const options = nested[1];
@@ -295,19 +290,6 @@ function fillMissingDepConstraints(value: unknown, depConstraints: unknown) {
 
   walk(value);
   return found;
-}
-
-function hasCustomBoundariesPlugin(jsPlugins: unknown) {
-  if (!Array.isArray(jsPlugins)) return false;
-
-  return jsPlugins.some((plugin) => {
-    if (plugin === OXLINT_BOUNDARIES_PLUGIN) return false;
-    if (typeof plugin === 'string') return plugin.includes('boundaries');
-    if (!plugin || typeof plugin !== 'object') return false;
-
-    const record = plugin as { name?: unknown; specifier?: unknown };
-    return String(record.name ?? '').includes('boundaries') || String(record.specifier ?? '').includes('boundaries');
-  });
 }
 
 function insertJsPlugin(config: Record<string, unknown>, plugin: string) {

@@ -111,10 +111,11 @@ describe('initGenerator', () => {
   "plugins": ["typescript"],
   "rules": {
     "no-console": ["error", { "allow": ["warn", "error"] }],
-    "boundaries/enforce-module-boundaries": [
+    "@nx/enforce-module-boundaries": [
       "error",
       {
         "enforceBuildableLibDependency": true,
+        "checkDynamicDependenciesExceptions": ["@org/shared-config"],
         "depConstraints": [{ "sourceTag": "*", "onlyDependOnLibsWithTags": ["*"] }]
       }
     ]
@@ -130,6 +131,7 @@ describe('initGenerator', () => {
     const updated = tree.read('.oxlintrc.json', 'utf-8') ?? '';
     expect(updated).toContain('"no-console": ["error", { "allow": ["warn", "error"] }]');
     expect(updated).toContain('"enforceBuildableLibDependency": true');
+    expect(updated).toContain('"checkDynamicDependenciesExceptions": ["@org/shared-config"]');
     expect(updated).toContain('"sourceTag": "domain:shared"');
     expect(updated).not.toContain('"sourceTag": "*"');
   });
@@ -139,13 +141,14 @@ describe('initGenerator', () => {
     tree.write(
       '.oxlintrc.json',
       JSON.stringify({
-        jsPlugins: ['./tools/oxlint/boundaries.mjs'],
+        jsPlugins: ['@nx/oxlint/boundaries-plugin', './tools/oxlint/ddd.mjs'],
         rules: {
           'no-console': 'error',
-          'boundaries/enforce-module-boundaries': [
+          '@nx/enforce-module-boundaries': [
             'error',
             {
               enforceBuildableLibDependency: true,
+              checkDynamicDependenciesExceptions: ['@org/shared-config', '@org/util-core'],
               depConstraints: [{ sourceTag: '*', onlyDependOnLibsWithTags: ['*'] }],
             },
           ],
@@ -158,14 +161,17 @@ describe('initGenerator', () => {
 
     // Assert
     const updated = JSON.parse(tree.read('.oxlintrc.json', 'utf-8') ?? '{}');
-    expect(updated.jsPlugins).toEqual(['./tools/oxlint/boundaries.mjs']);
+    expect(updated.jsPlugins).toEqual(['@nx/oxlint/boundaries-plugin', './tools/oxlint/ddd.mjs']);
     expect(updated.rules['no-console']).toBe('error');
-    expect(updated.rules['@nx/enforce-module-boundaries']).toBeUndefined();
-    expect(updated.rules['boundaries/enforce-module-boundaries'][1].enforceBuildableLibDependency).toBe(true);
-    expect(updated.rules['boundaries/enforce-module-boundaries'][1].depConstraints).toEqual(
+    expect(updated.rules['@nx/enforce-module-boundaries'][1].enforceBuildableLibDependency).toBe(true);
+    expect(updated.rules['@nx/enforce-module-boundaries'][1].checkDynamicDependenciesExceptions).toEqual([
+      '@org/shared-config',
+      '@org/util-core',
+    ]);
+    expect(updated.rules['@nx/enforce-module-boundaries'][1].depConstraints).toEqual(
       expect.arrayContaining([expect.objectContaining({ sourceTag: 'domain:shared' })])
     );
-    expect(updated.rules['boundaries/enforce-module-boundaries'][1].depConstraints).not.toEqual(
+    expect(updated.rules['@nx/enforce-module-boundaries'][1].depConstraints).not.toEqual(
       expect.arrayContaining([expect.objectContaining({ sourceTag: '*' })])
     );
   });

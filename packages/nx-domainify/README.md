@@ -11,7 +11,7 @@ npm install -D nx-domainify
 npx nx g nx-domainify:init
 ```
 
-`init` writes DDD module-boundary constraints into the root Oxlint config when the workspace has one, and into the ESLint config otherwise. It also installs an AI skill (`.cursor/skills/nx-domainify-generate` and `.claude/skills/nx-domainify-generate`) so agents use `nx-domainify:*` commands and `--help` when they are unsure. A new Nx Oxlint workspace gets `@nx/oxlint/boundaries-plugin`. An existing `boundaries/enforce-module-boundaries` rule keeps its name.
+`init` writes DDD module-boundary constraints into the root Oxlint config when the workspace has one, and into the ESLint config otherwise. It also installs an AI skill (`.cursor/skills/nx-domainify-generate` and `.claude/skills/nx-domainify-generate`) so agents use `nx-domainify:*` commands and `--help` when they are unsure. Both linters use `@nx/enforce-module-boundaries`. A new Nx Oxlint workspace gets `@nx/oxlint/boundaries-plugin`.
 
 ## Generators
 

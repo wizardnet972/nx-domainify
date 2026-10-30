@@ -6,6 +6,10 @@
 /// <reference path="registry.d.ts" />
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const workspaceRoot = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
 export default () => {
   if (global.stopLocalRegistry) {
@@ -17,7 +21,10 @@ export default () => {
     return;
   }
 
-  for (const file of ['packages/nx-domainify/package.json', 'dist/packages/nx-domainify/package.json']) {
+  for (const file of [
+    join(workspaceRoot, 'packages/nx-domainify/package.json'),
+    join(workspaceRoot, 'dist/packages/nx-domainify/package.json'),
+  ]) {
     if (!existsSync(file)) {
       continue;
     }
