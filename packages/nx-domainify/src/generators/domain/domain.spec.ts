@@ -155,12 +155,13 @@ describe('domainGenerator', () => {
     tree.write(
       '.oxlintrc.json',
       JSON.stringify({
-        jsPlugins: ['./tools/oxlint/boundaries.mjs'],
+        jsPlugins: ['@nx/oxlint/boundaries-plugin', './tools/oxlint/ddd.mjs'],
         rules: {
-          'boundaries/enforce-module-boundaries': [
+          '@nx/enforce-module-boundaries': [
             'error',
             {
               enforceBuildableLibDependency: true,
+              checkDynamicDependenciesExceptions: ['@org/shared-config', '@org/util-core'],
               depConstraints: [{ sourceTag: 'domain:shared', onlyDependOnLibsWithTags: ['domain:shared'] }],
             },
           ],
@@ -174,11 +175,14 @@ describe('domainGenerator', () => {
 
     // Assert
     const updated = JSON.parse(tree.read('.oxlintrc.json', 'utf-8') ?? '{}');
-    const constraints = updated.rules['boundaries/enforce-module-boundaries'][1].depConstraints;
+    const constraints = updated.rules['@nx/enforce-module-boundaries'][1].depConstraints;
     expect(constraints[0]).toEqual({ sourceTag: 'domain:orders', onlyDependOnLibsWithTags: ['domain:orders', 'domain:shared'] });
     expect(constraints[1]).toEqual({ sourceTag: 'domain:shared', onlyDependOnLibsWithTags: ['domain:shared'] });
-    expect(updated.jsPlugins).toEqual(['./tools/oxlint/boundaries.mjs']);
-    expect(updated.rules['@nx/enforce-module-boundaries']).toBeUndefined();
+    expect(updated.rules['@nx/enforce-module-boundaries'][1].checkDynamicDependenciesExceptions).toEqual([
+      '@org/shared-config',
+      '@org/util-core',
+    ]);
+    expect(updated.jsPlugins).toEqual(['@nx/oxlint/boundaries-plugin', './tools/oxlint/ddd.mjs']);
   });
 
   it('appends the domain constraint to Oxlint and leaves ESLint unchanged', async () => {

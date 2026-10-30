@@ -6,13 +6,19 @@
 /// <reference path="registry.d.ts" />
 
 import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { startLocalRegistry } from '@nx/js/plugins/jest/local-registry';
 import { releasePublish, releaseVersion } from 'nx/release';
 
+const workspaceRoot = join(dirname(fileURLToPath(import.meta.url)), '../..');
+
 export default async () => {
   const localRegistryTarget = '@nx-domainify/source:local-registry';
-  const storage = './tmp/local-registry/storage';
-  const manifest = 'packages/nx-domainify/package.json';
+  const storage = join(workspaceRoot, 'tmp/local-registry/storage');
+  const manifest = join(workspaceRoot, 'packages/nx-domainify/package.json');
+
+  process.chdir(workspaceRoot);
 
   global.__nxDomainifyOriginalVersion = JSON.parse(readFileSync(manifest, 'utf-8')).version;
 
