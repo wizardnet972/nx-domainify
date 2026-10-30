@@ -1,3 +1,13 @@
+## 2.4.0 (2026-10-30)
+
+### 🚀 Features
+
+- follow Nx's official Oxlint module-boundary rule ([#2](https://github.com/wizardnet972/nx-domainify/pull/2))
+
+### ❤️ Thank You
+
+- Shlomi Levi @wizardnet972
+
 ## 2.3.0 (2026-10-25)
 
 ### 🚀 Features
